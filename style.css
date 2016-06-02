@@ -7,3 +7,6 @@ body {
 /*#canvas {
 	border: 1px solid gray;
 }*/
+#file_input {
+	margin: 4px auto;
+}
