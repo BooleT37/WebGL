@@ -1,12 +1,27 @@
 body {
 	font-family: Segoe UI, Arial; sans-serif;
 }
-#canvas__header {
-	font-size: 2em;
+
+#wrapper {
+	width: 800px;
+	margin: 0 auto;
+	text-align: center;
 }
-/*#canvas {
-	border: 1px solid gray;
-}*/
+#title {
+	font-size: 2em;
+	font-weight: 400;
+}
 #file_input {
 	margin: 4px auto;
+}
+#image_area, #buttons_area {
+	display: inline-block;
+    vertical-align: top;
+}
+#buttons_area button {
+	display: block;
+	margin-bottom: 5px;
+}
+#turn_grayscale_button {
+    margin-top: 72px;
 }

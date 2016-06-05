@@ -1,39 +1,50 @@
-function onLoad() {	
+function onLoad() {
+	
+	var img;
+	var gl;
 	document.getElementById("file_input").onchange = function(e) {
 
 		var URL = window.URL;
 		var url = URL.createObjectURL(e.target.files[0]);
-		var img = new Image();
+		img = new Image();
 		img.src = url;
-	
+		
 		img.onload = function() {
-	
-				img_width = img.width;
-				img_height = img.height;
-	
-				render(img, img_width, img_height);
+			gl = render(img, img.width, img.height, "fragment_shader_base");
 		}
+	}
+	
+	document.getElementById("turn_grayscale_button").onclick = function() {
+		if (!img)
+			return;
+		gl = render(img, img.width, img.height, "fragment_shader_grayscale");
+
+	}
+	document.getElementById("cancel_button").onclick = function() {
+		if (!img)
+			return;
+		gl = render(img, img.width, img.height, "fragment_shader_base");
 	}
 }
 
-function render(image, img_width, img_height) {
+function render(image, imgWidth, imgHeight, fragmentShaderName) {
 	var canvas = document.getElementById("canvas");
 	var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 	
-	if (img_width === undefined && img_height === undefined) {
+	if (imgWidth === undefined && imgHeight === undefined) {
 		var size = Math.min(window.innerWidth, window.innerHeight); 
 		canvas.width = canvas.height = size;
 		gl.viewport(0, 0, size, size);
 	} else {
-		//if (img_height === undefined)
-		//	img_height = img_width;
-		//canvas.width = img_width
-		//canvas.height = img_height;
-		//gl.viewport(0, 0, img_width, img_height);
+		//if (imgHeight === undefined)
+		//	imgHeight = imgWidth;
+		//canvas.width = imgWidth
+		//canvas.height = imgHeight;
+		//gl.viewport(0, 0, imgWidth, imgHeight);
 	}
 	
 	// Инициализация шейдеров
-	var fragmentShader = getShader(gl, "fragment_shader");
+	var fragmentShader = getShader(gl, fragmentShaderName);
     var vertexShader = getShader(gl, "vertex_shader");
 	
 	
@@ -48,7 +59,6 @@ function render(image, img_width, img_height) {
 		console.error(gl.getProgramInfoLog(program));
 	}
 	
-	// Укажем какую шейдерную программу мы намерены далее использовать
 	gl.useProgram(program);
 	
 	var positionLocation = gl.getAttribLocation(program, "a_position"); 
@@ -73,37 +83,63 @@ function render(image, img_width, img_height) {
 	var texture = gl.createTexture();
 	gl.bindTexture(gl.TEXTURE_2D, texture);
 	
-	// Set the parameters so we can render any size image.
+	// Set the parameters so we can render any size image
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 	gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 	
-	// Upload the image into the texture.
-	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+	// Upload the image into the texture
+	try {
+		gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+	} catch(e) {
+		console.log(e);
+	}
 	
-	var dstX = 0;
-	var dstY = 0;
-	var dstWidth = 64;
-	var dstHeight = 64;
+	// convert dst pixel coords to clipspace coords
+	var kw = imgWidth / gl.canvas.width,
+		kh = imgHeight / gl.canvas.height;
+	var M;
 	
-	// convert dst pixel coords to clipspace coords      
-	var clipX = dstX / gl.canvas.width  *  2 - 1;
-	var clipY = dstY / gl.canvas.height * -2 + 1;
-	var clipWidth = dstWidth  / gl.canvas.width  *  2;
-	var clipHeight = dstHeight / gl.canvas.height * -2;
+	//It took me 3 hours and 9 notebook pages to count these values for M. Holy shit
+	//If we can fit image in canvas without scaling it:
+	if (kw < 1 && kh < 1) {
+		M = [
+			kw * 2, 0, 0,
+			0, -kh * 2, 0,
+			-kw, kh, 1
+		];
+	} else {
+		//scale and fit width:
+		if (kw >= kh) {
+			var k = kh / kw;
+			M = [
+				2, 0, 0,
+				0, -k * 2, 0,
+				-1, k, 1
+			];
+		//scale and fit height
+		} else {
+			var k = kw / kh;
+			M = [
+				k * 2, 0, 0,
+				0, -2, 0,
+				-k, 1, 1
+			]
+		}
+	}
+	
 	
 	// build a matrix that will stretch our
 	// unit quad to our desired size and location
-	gl.uniformMatrix3fv(u_matrixLoc, false, [
-		clipWidth, 0, 0,
-		0, clipHeight, 0,
-		clipX, clipY, 1,
-		]);
+	gl.uniformMatrix3fv(u_matrixLoc, false, M);
 	
 	// Draw the rectangle.
 	gl.drawArrays(gl.TRIANGLES, 0, 6);
+	
+	return gl;
 }
+
 
 function getShader(gl, id) {
     var shaderScript = document.getElementById(id);

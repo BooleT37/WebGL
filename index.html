@@ -18,13 +18,18 @@
 			v_texCoord = a_position;
 		}
 	</script>
-	<script id="fragment_shader" type="x-shader/x-fragment">
+	<script id="fragment_shader_base" type="x-shader/x-fragment">
 		precision mediump float;
-
-		// our texture
 		uniform sampler2D u_image;
+		varying vec2 v_texCoord;
 		
-		// the texCoords passed in from the vertex shader.
+		void main() {
+			gl_FragColor = texture2D(u_image, v_texCoord);;
+		}
+	</script>
+	<script id="fragment_shader_grayscale" type="x-shader/x-fragment">
+		precision mediump float;
+		uniform sampler2D u_image;
 		varying vec2 v_texCoord;
 		
 		void main() {
@@ -39,7 +44,16 @@
 	<title>WebGL experimentation</title>
 </head>
 <body onload="onLoad()">
-	<input type="file" id="file_input"><br/>
-	<canvas id="canvas" width="200" height="100" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
+	<div id="wrapper">
+		<div id="image_area">
+			<div id="title">Загрузите файл с компьютера:</div>
+			<input type="file" id="file_input"><br/>
+			<canvas id="canvas" width="640" height="480" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
+		</div>
+		<div id="buttons_area">
+			<button id="turn_grayscale_button">Сделать черно-белым</button>
+			<button id="cancel_button">Отменить</button>
+		</div>
+	</div>
 </body>
 </html>
