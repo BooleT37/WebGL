@@ -25,11 +25,21 @@ function onLoad() {
 			return;
 		gl = render(img, img.width, img.height, "fragment_shader_base");
 	}
+	document.getElementById("save_button").onclick = function() {
+		if (!img)
+			return;
+		var canvas = document.getElementById("canvas");
+		var image = canvas.toDataURL();
+		var download = document.createElement('a');
+		download.href = image;
+		download.download = "image.png";
+		download.click();
+	}
 }
 
 function render(image, imgWidth, imgHeight, fragmentShaderName) {
 	var canvas = document.getElementById("canvas");
-	var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+	var gl = canvas.getContext('webgl', {preserveDrawingBuffer: true}) || canvas.getContext('experimental-webgl');
 	
 	if (imgWidth === undefined && imgHeight === undefined) {
 		var size = Math.min(window.innerWidth, window.innerHeight); 
