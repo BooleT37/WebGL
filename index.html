@@ -11,11 +11,11 @@
 		varying vec2 v_texCoord;
 		
 		void main() {
-		gl_Position = vec4(u_matrix * vec3(a_position, 1), 1);
-		
-		// because we're using a unit quad we can just use
-		// the same data for our texcoords.
-		v_texCoord = a_position;  
+			gl_Position = vec4(u_matrix * vec3(a_position, 1), 1);
+			
+			// because we're using a unit quad we can just use
+			// the same data for our texcoords.
+			v_texCoord = a_position;
 		}
 	</script>
 	<script id="fragment_shader" type="x-shader/x-fragment">
@@ -28,7 +28,10 @@
 		varying vec2 v_texCoord;
 		
 		void main() {
-		gl_FragColor = texture2D(u_image, v_texCoord);
+			vec4 color = texture2D(u_image, v_texCoord);
+			float avg = (color.r + color.g + color.b) / 3.0;
+			color.rgb = vec3(avg, avg, avg);
+			gl_FragColor = color;
 		}
 	</script>
 	<script src="scripts.js"></script>
@@ -37,6 +40,6 @@
 </head>
 <body onload="onLoad()">
 	<input type="file" id="file_input"><br/>
-	<canvas id="canvas" width="200" height="100" style="border:1px solid #c3c3c3;">Fuck it</canvas>
+	<canvas id="canvas" width="200" height="100" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
 </body>
 </html>

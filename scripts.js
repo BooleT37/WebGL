@@ -17,7 +17,6 @@ function onLoad() {
 }
 
 function render(image, img_width, img_height) {
-	console.log(img_width, img_height)
 	var canvas = document.getElementById("canvas");
 	var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 	
@@ -83,10 +82,10 @@ function render(image, img_width, img_height) {
 	// Upload the image into the texture.
 	gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
 	
-	var dstX = 10;
-	var dstY = 10;
+	var dstX = 0;
+	var dstY = 0;
 	var dstWidth = 64;
-	var dstHeight = 64; //отсюда продолжить
+	var dstHeight = 64;
 	
 	// convert dst pixel coords to clipspace coords      
 	var clipX = dstX / gl.canvas.width  *  2 - 1;
