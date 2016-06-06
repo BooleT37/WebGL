@@ -18,8 +18,11 @@ body {
 	display: inline-block;
     vertical-align: top;
 }
+#buttons_area {
+    width: 170px;
+    text-align: left;
+}
 #buttons_area button {
-	display: block;
 	margin-bottom: 5px;
 }
 #turn_grayscale_button {
@@ -27,4 +30,8 @@ body {
 }
 #save_button {
 	margin-top: 20px;
+}
+#degrees_input {
+	width: 35px;
+	margin-left: 5px;
 }

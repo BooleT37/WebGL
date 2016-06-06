@@ -19,6 +19,7 @@ function onLoad() {
 
 function initializeButtonHandlers(img, processor, imgFile) {
 	var turnGrayscaleButton = document.getElementById("turn_grayscale_button"),
+		rotateButton = document.getElementById("rotate_button"),
 		cancelButton = document.getElementById("cancel_button"),
 		saveButton = document.getElementById("save_button");
 		
@@ -30,6 +31,13 @@ function initializeButtonHandlers(img, processor, imgFile) {
 		methods[0] = true;
 		methodsStack.push(0);
 		processor.render(methods);
+	}
+	//Method 2:
+	rotateButton.onclick = function() {
+		methods[2] = true;
+		methodsStack.push(2);
+		rotationAngle = parseInt(document.getElementById('degrees_input').value, 10);
+		processor.render(methods, {rotationAngle: rotationAngle});
 	}
 	cancelButton.onclick = function() {
 		if (methodsStack.length > 0) {
@@ -61,6 +69,7 @@ function initializeButtonHandlers(img, processor, imgFile) {
 	}
 	
 	turnGrayscaleButton.disabled = false;
+	rotateButton.disabled = false;
 	cancelButton.disabled = false;
 	saveButton.disabled = false;
 }
