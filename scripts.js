@@ -11,29 +11,52 @@ function onLoad() {
 		
 		img.onload = function() {
 			processor = new WebglImageProcessor(img);
-			processor.render(img, processor.FRAGMENT_SHADER_NAMES.BASE);
-			initializeButtonHandlers(img, processor, file.name);
+			processor.render([false, false]);
+			initializeButtonHandlers(img, processor, file);
 		}
 	}	
 }
 
-function initializeButtonHandlers(img, processor, imgFileName) {
+function initializeButtonHandlers(img, processor, imgFile) {
 	var turnGrayscaleButton = document.getElementById("turn_grayscale_button"),
 		cancelButton = document.getElementById("cancel_button"),
 		saveButton = document.getElementById("save_button");
+		
+	var methods = [false, false];
+	var methodsStack = []
 	
+	//Method 0:
 	turnGrayscaleButton.onclick = function() {
-		processor.render(img, processor.FRAGMENT_SHADER_NAMES.GRAYSCALE);
+		methods[0] = true;
+		methodsStack.push(0);
+		processor.render(methods);
 	}
 	cancelButton.onclick = function() {
-		processor.render(img, processor.FRAGMENT_SHADER_NAMES.BASE);
+		if (methodsStack.length > 0) {
+			methods[methodsStack.pop()] = false;
+			processor.render(methods);
+		}
 	}
+	//Method 1:
 	saveButton.onclick = function() {
-		var canvas = document.getElementById("canvas");
-		var image = canvas.toDataURL();
+		var canvas = document.createElement('canvas'),
+			gl = canvas.getContext('webgl', {preserveDrawingBuffer: true}) || canvas.getContext('experimental-webgl', {preserveDrawingBuffer: true});
+		canvas.style.display = "none";
+		document.body.appendChild(canvas);
+		
+		canvas.width = img.width;
+		canvas.height = img.height;
+		gl.viewport(0, 0, img.width, img.height);
+		
+		methods[1] = true;
+		processor.render(methods, canvas, gl);
+		var image = canvas.toDataURL(imgFile.type); //TODO big files transform incorrectly, needs fixing
+		document.body.removeChild(canvas);
+		methods[1] = false;
+		
 		var download = document.createElement('a');
 		download.href = image;
-		download.download = imgFileName; //todo change extention
+		download.download = imgFile.name;
 		download.click();
 	}
 	

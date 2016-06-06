@@ -15,24 +15,18 @@
 			v_texCoord = a_position;
 		}
 	</script>
-	<script id="fragment_shader_base" type="x-shader/x-fragment">
+	<script id="fragment_shader" type="x-shader/x-fragment">
 		precision mediump float;
-		uniform sampler2D u_image;
-		varying vec2 v_texCoord;
-		
-		void main() {
-			gl_FragColor = texture2D(u_image, v_texCoord);;
-		}
-	</script>
-	<script id="fragment_shader_grayscale" type="x-shader/x-fragment">
-		precision mediump float;
+		uniform bool u_methods[2];
 		uniform sampler2D u_image;
 		varying vec2 v_texCoord;
 		
 		void main() {
 			vec4 color = texture2D(u_image, v_texCoord);
-			float avg = (color.r + color.g + color.b) / 3.0;
-			color.rgb = vec3(avg, avg, avg);
+			if (u_methods[0]) {
+				float avg = (color.r + color.g + color.b) / 3.0;
+				color.rgb = vec3(avg, avg, avg);
+			}
 			gl_FragColor = color;
 		}
 	</script>
