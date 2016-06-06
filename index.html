@@ -1,15 +1,12 @@
-<!DOCTYPE HTML>
+<!DOCTYPE HTML>
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8">
 	<link rel="stylesheet" type="text/css" href="style.css">
 	<script id="vertex_shader" type="x-shader/x-vertex">
 		attribute vec2 a_position;
-
 		uniform mat3 u_matrix;
-		
 		varying vec2 v_texCoord;
-		
 		void main() {
 			gl_Position = vec4(u_matrix * vec3(a_position, 1), 1);
 			
@@ -39,21 +36,22 @@
 			gl_FragColor = color;
 		}
 	</script>
+	<script src="WebglImageProcessor.js"></script>
 	<script src="scripts.js"></script>
 	<link rel="icon" type="image/ico" href="favicon.ico">
 	<title>WebGL experimentation</title>
-</head>
+</head>
 <body onload="onLoad()">
 	<div id="wrapper">
 		<div id="image_area">
 			<div id="title">Загрузите файл с компьютера:</div>
-			<input type="file" id="file_input"><br/>
+			<input type="file" id="file_input"><br/>
 			<canvas id="canvas" width="640" height="480" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
 		</div>
 		<div id="buttons_area">
-			<button id="turn_grayscale_button">Сделать черно-белым</button>
-			<button id="cancel_button">Отменить</button>
-			<button id="save_button">Сохранить изображение</button>
+			<button id="turn_grayscale_button" disabled="disabled">Сделать черно-белым</button>
+			<button id="cancel_button" disabled="disabled">Отменить</button>
+			<button id="save_button" disabled="disabled">Сохранить изображение</button>
 		</div>
 	</div>
 </body>
