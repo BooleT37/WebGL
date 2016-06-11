@@ -26,11 +26,14 @@ class Program {
 		self.getControlsRefs();		
 		self.initializeButtonHandlers();
 		
-		self.linkSliderAndInput(document.getElementById("rotate_slider"), document.getElementById("degrees_input"));
-		self.linkSliderAndInput(document.getElementById("r_component_slider"), document.getElementById("r_component_input"));
-		self.linkSliderAndInput(document.getElementById("g_component_slider"), document.getElementById("g_component_input"));
-		self.linkSliderAndInput(document.getElementById("b_component_slider"), document.getElementById("b_component_input"));
-		self.linkSliderAndInput(document.getElementById("a_component_slider"), document.getElementById("a_component_input"));
+		self.linkSliderAndInput(self.rotateSlider, self.degreesInput);
+		self.linkSliderAndInput(self.rComponentSlider, self.rComponentInput);
+		self.linkSliderAndInput(self.gComponentSlider, self.gComponentInput);
+		self.linkSliderAndInput(self.bComponentSlider, self.bComponentInput);
+		self.linkSliderAndInput(self.aComponentSlider, self.aComponentInput);
+		self.linkSliderAndInput(self.brightnessSlider, self.brightnessInput);
+		self.linkSliderAndInput(self.contrastSlider, self.contrastInput);
+		self.linkSliderAndInput(self.saturationSlider, self.saturationInput);
 		self.linkSliderAndInput(document.getElementById("gamma_slider"), document.getElementById("gamma_input"));
 	}
 
@@ -49,9 +52,9 @@ class Program {
 			self.resetControls();
 		}
 		
-		function renderColorMatrix(matrix, lastRow) {
+		function renderColorMatrix(matrix4x4, lastRow) {
 			self.options.colorMatrix = {
-				matrix4x4: matrix,
+				matrix4x4: matrix4x4,
 				lastRow: lastRow
 			};
 			self.processor.render(self.options);
@@ -76,16 +79,49 @@ class Program {
 		self.aComponentSlider.addEventListener('input', applyColorComponents);
 		
 		self.gammaSlider.addEventListener('input', function() {
-			self.options.gamma = self.gammaSlider.value;
+			self.options.gamma = parseFloat(self.gammaSlider.value);
 			self.processor.render(self.options);
 		});
 		
-		//Grayscale
-		self.colorMatrixTiles[0].addEventListener('click', function(e) {
+		function applyMatrixTransform() {
+			var b = parseFloat(self.brightnessSlider.value),
+				c = parseFloat(self.contrastSlider.value),
+				s = parseFloat(self.saturationSlider.value),
+				t = (1 - c) / 2,
+				lumR = 0.3086,
+				lumG = 0.6094,
+				lumB = 0.0820,
+				sr = (1 - s) * lumR,
+				sg = (1 - s) * lumG,
+				sb = (1 - s) * lumB,
+				csr = c * sr,
+				csg = c * sg,
+				csb = c * sb,
+				tb = t + b;
+				
+			renderColorMatrix([
+				c*(sr+s), csg, csb, 0,
+				csr, c*(sg+s), csb, 0,
+				csr, csg, c*(sb+s), 0,
+				0, 0, 0, 1
+			], [tb, tb, tb, 0]);
+		}
+		
+		self.brightnessSlider.addEventListener('input', applyMatrixTransform);
+		self.contrastSlider.addEventListener('input', applyMatrixTransform);
+		self.saturationSlider.addEventListener('input', applyMatrixTransform);
+		
+		function renderColorMatrixPreset(e, matrix4x4, lastRow) {
 			if (e.target.classList.contains("colorMatrixTile_disabled"))
 				return;
 			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix([
+			renderColorMatrix(matrix4x4, lastRow);
+			self.resetControls(false);
+		};
+		
+		//Grayscale
+		self.colorMatrixTiles[0].addEventListener('click', function(e) {
+			renderColorMatrixPreset(e, [
 				0.33,0.59,0.11,0,
 				0.33,0.59,0.11,0,
 				0.33,0.59,0.11,0,
@@ -94,10 +130,7 @@ class Program {
 		});
 		//Invert
 		self.colorMatrixTiles[1].addEventListener('click', function(e) {
-			if (e.target.classList.contains("colorMatrixTile_disabled"))
-				return;
-			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix([
+			renderColorMatrixPreset(e, [
 				-1,0,0,0,
 				0,-1,0,0,
 				0,0,-1,0,
@@ -106,10 +139,7 @@ class Program {
 		}),
 		//RGB -> BGR
 		self.colorMatrixTiles[2].addEventListener('click', function(e) {
-			if (e.target.classList.contains("colorMatrixTile_disabled"))
-				return;
-			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix([
+			renderColorMatrixPreset(e, [
 				0,0,1,0,
 				0,1,0,0,
 				1,0,0,0,
@@ -118,10 +148,7 @@ class Program {
 		}),
 		//Sepia
 		self.colorMatrixTiles[3].addEventListener('click', function(e) {
-			if (e.target.classList.contains("colorMatrixTile_disabled"))
-				return;
-			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix([
+			renderColorMatrixPreset(e, [
 				0.393,0.769,0.189,0,
 				0.349,0.686,0.168,0,
 				0.272,0.534,0.131,0,
@@ -130,10 +157,7 @@ class Program {
 		}),
 		//Black & White
 		self.colorMatrixTiles[4].addEventListener('click', function(e) {
-			if (e.target.classList.contains("colorMatrixTile_disabled"))
-				return;
-			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix([
+			renderColorMatrixPreset(e, [
 				1.5,1.5,1.5,0,
 				1.5,1.5,1.5,0,
 				1.5,1.5,1.5,0,
@@ -142,10 +166,7 @@ class Program {
 		}),
 		//Polaroid Color
 		self.colorMatrixTiles[5].addEventListener('click', function(e) {
-			if (e.target.classList.contains("colorMatrixTile_disabled"))
-				return;
-			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix([
+			renderColorMatrixPreset(e, [
 				1.438,-0.122,-0.016,0,
 				-0.062,1.378,-0.016,0,
 				-0.062,-0.122,1.483,0,
@@ -154,10 +175,7 @@ class Program {
 		}),
 		//White to Alpha
 		self.colorMatrixTiles[6].addEventListener('click', function(e) {
-			if (e.target.classList.contains("colorMatrixTile_disabled"))
-				return;
-			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix([
+			renderColorMatrixPreset(e, [
 				1,0,0,0,
 				0,1,0,0,
 				0,0,1,0,
@@ -213,9 +231,13 @@ class Program {
 		tile.classList.add('colorMatrixTile_active');
 	}
 	
-	resetControls() {
-		this.degreesInput.value = 0;
-		this.rotateSlider.value = 0;
+	resetControls(resetRotation) {
+		if (resetRotation === undefined)
+			resetRotation = true;
+		if (resetRotation) {
+			this.degreesInput.value = 0;
+			this.rotateSlider.value = 0;
+		}
 		this.rComponentSlider.value = 100;
 		this.rComponentInput.value = 100;
 		this.gComponentSlider.value = 100;
@@ -224,6 +246,12 @@ class Program {
 		this.bComponentInput.value = 100;
 		this.aComponentSlider.value = 100;
 		this.aComponentInput.value = 100;
+		this.brightnessSlider.value = 0;
+		this.brightnessInput.value = 0;
+		this.contrastSlider.value = 1;
+		this.contrastInput.value = 1;
+		this.saturationSlider.value = 1;
+		this.saturationInput.value = 1;
 		this.gammaSlider.value = 1;
 		this.gammaInput.value = 1;
 		this.deactivateAllColorMatrixTiles();
@@ -243,6 +271,12 @@ class Program {
 		this.bComponentInput.disabled = false;
 		this.aComponentSlider.disabled = false;
 		this.aComponentInput.disabled = false;
+		this.brightnessSlider.disabled = false;
+		this.brightnessInput.disabled = false;
+		this.contrastSlider.disabled = false;
+		this.contrastInput.disabled = false;
+		this.saturationSlider.disabled = false;
+		this.saturationInput.disabled = false;
 		this.gammaSlider.disabled = false;
 		this.gammaInput.disabled = false;
 		this.colorMatrixTiles.forEach(function(tile) { tile.classList.remove('colorMatrixTile_disabled') });
@@ -261,6 +295,12 @@ class Program {
 		this.bComponentInput = document.getElementById("b_component_input"),
 		this.aComponentSlider = document.getElementById("a_component_slider"),
 		this.aComponentInput = document.getElementById("a_component_input"),
+		this.brightnessSlider = document.getElementById("brightness_slider"),
+		this.brightnessInput = document.getElementById("brightness_input"),
+		this.contrastSlider = document.getElementById("contrast_slider"),
+		this.contrastInput = document.getElementById("contrast_input"),
+		this.saturationSlider = document.getElementById("saturation_slider"),
+		this.saturationInput = document.getElementById("saturation_input"),
 		this.gammaSlider = document.getElementById("gamma_slider"),
 		this.gammaInput = document.getElementById("gamma_input");
 		this.colorMatrixTiles = [

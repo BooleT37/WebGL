@@ -1,9 +1,8 @@
 body {
-	font-family: Segoe UI, Arial; sans-serif;
+	font-family: Segoe UI, Arial, sans-serif;
 }
 
 #wrapper {
-	width: 820px;
 	margin: 0 auto;
 	text-align: center;
 }
@@ -52,20 +51,20 @@ body {
 input[type="range"] {
 	vertical-align: -6px;
 }
-.color_component_input {
+.color_component_input, #brightness_input, #contrast_input, #saturation_input, #gamma_input {
 	width: 35px;
 }
 .percent_sign {
     color: gray;
+}
+#brightness_slider, #contrast_slider, #saturation_slider {
+	width: 106px;
 }
 #gamma_text {
 	display: inline-block;
 }
 #gamma_slider {
 	width: 62px;
-}
-#gamma_input {
-	width: 35px;
 }
 #restore_button {
 	margin-top:10px;

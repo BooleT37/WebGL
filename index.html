@@ -40,7 +40,7 @@
 		<div id="image_area">
 			<div id="title">Загрузите файл с компьютера:</div>
 			<input type="file" id="file_input"><br/>
-			<canvas id="canvas" width="640" height="480" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
+			<canvas id="canvas" width="800" height="600" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
 		</div>
 		<div id="buttons_area">
 			<div id="rotate_text">Повернуть на</div><input id="degrees_input" value="0" min="0" max="359" type="number" disabled="disabled"></input>&#176;
@@ -64,6 +64,21 @@
 				<div class="color_component_text"><span style="color: gray">A</span>:</div>
 				<input class="color_component_slider" id="a_component_slider" type="range" min="0" max="100" step="1" value="100" disabled="disabled">
 				<input class="color_component_input" id="a_component_input" value="100" min="0" max="100" type="number" disabled="disabled"></input><span class="percent_sign">%</class>
+			</div>
+			<div>
+				<div>Яркость:</div>
+				<input id="brightness_slider" type="range" min="-1" max="1" step=0.1 value="0" disabled="disabled">
+				<input id="brightness_input" type="number" min="-1" max="1" step=0.1 value="0" disabled="disabled"></input>
+			</div>
+			<div>
+				<div>Контрастность:</div>
+				<input id="contrast_slider" type="range" min="0" max="2" step=0.1 value="1" disabled="disabled">
+				<input id="contrast_input" type="number" min="0" max="2" step=0.1 value="1" disabled="disabled"></input>
+			</div>
+			<div>
+				<div>Насыщенность:</div>
+				<input id="saturation_slider" type="range" min="0" max="2" step=0.1 value="1" disabled="disabled">
+				<input id="saturation_input" type="number" min="0" max="2" step=0.1 value="1" disabled="disabled"></input>
 			</div>
 			<div>
 				<div id="gamma_text">Гамма:</div>
