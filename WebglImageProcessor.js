@@ -2,7 +2,8 @@ class WebglImageProcessor {
 	constructor(img, canvas) {
 		this.img = img;
 		this.canvas = canvas;
-		var gl = this.gl = canvas.getContext('webgl', {preserveDrawingBuffer: true}) || canvas.getContext('experimental-webgl', {preserveDrawingBuffer: true});
+		this.gl = canvas.getContext('webgl', {preserveDrawingBuffer: true}) || canvas.getContext('experimental-webgl', {preserveDrawingBuffer: true});
+		var gl = this.gl;
 		
 		//constants
 		this.VERTEX_SHADER_NAME = "vertex_shader";
@@ -10,7 +11,8 @@ class WebglImageProcessor {
 		
 		var fragmentShader = this.getShader(gl, this.FRAGMENT_SHADER_NAME);
 		var vertexShader = this.getShader(gl, this.VERTEX_SHADER_NAME);
-		var program = this.program = gl.createProgram();
+		this.program = gl.createProgram();
+		var program = this.program;
 		gl.attachShader(program, vertexShader);
 		gl.attachShader(program, fragmentShader);
 		gl.linkProgram(program);
