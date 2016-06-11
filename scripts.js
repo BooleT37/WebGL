@@ -49,14 +49,25 @@ class Program {
 			self.resetControls();
 		}
 		
-		function applyColorComponents() {			
-			self.options.colorComponents = {
-				r: self.rComponentSlider.value,
-				g: self.gComponentSlider.value,
-				b: self.bComponentSlider.value,
-				a: self.aComponentSlider.value
-			}
+		function renderColorMatrix(matrix, lastRow) {
+			self.options.colorMatrix = {
+				matrix4x4: matrix,
+				lastRow: lastRow
+			};
 			self.processor.render(self.options);
+		}
+		
+		function applyColorComponents() {
+			var r = self.rComponentSlider.value / 100,
+				g = self.gComponentSlider.value / 100,
+				b = self.bComponentSlider.value / 100,
+				a = self.aComponentSlider.value / 100;
+			renderColorMatrix([
+				r,0,0,0,
+				0,g,0,0,
+				0,0,b,0,
+				0,0,0,a
+			], [0,0,0,0]);
 		}
 		
 		self.rComponentSlider.addEventListener('input', applyColorComponents);
@@ -68,14 +79,6 @@ class Program {
 			self.options.gamma = self.gammaSlider.value;
 			self.processor.render(self.options);
 		});
-		
-		function renderColorMatrix(matrix, lastRow) {
-			self.options.colorMatrix = {
-				matrix4x4: matrix,
-				lastRow: lastRow
-			};
-			self.processor.render(self.options);
-		}
 		
 		//Grayscale
 		self.colorMatrixTiles[0].addEventListener('click', function() {

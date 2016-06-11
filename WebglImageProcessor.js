@@ -57,7 +57,6 @@ class WebglImageProcessor {
 		
 		this.u_locations = {
 			matrix: gl.getUniformLocation(program, "u_matrix"),
-			colorComponents: gl.getUniformLocation(program, "u_colorComponents"),
 			gamma: gl.getUniformLocation(program, "u_gamma"),
 			colorMatrix4x4: gl.getUniformLocation(program, "u_colorMatrix4x4"),
 			colorMatrixLastRow: gl.getUniformLocation(program, "u_colorMatrixLastRow")
@@ -165,17 +164,6 @@ class WebglImageProcessor {
 		
 		var M = this.dotProduct(scaleMatrix, translationMatrix);
 		M = this.dotProduct(M, rotationMatrix);
-		
-		var colorComponents = [1, 1, 1, 1];
-		if (options.colorComponents !== undefined)
-			colorComponents = [
-				options.colorComponents.r / 100,
-				options.colorComponents.g / 100,
-				options.colorComponents.b / 100,
-				options.colorComponents.a / 100
-			];
-			
-		gl.uniform4fv(this.u_locations.colorComponents, colorComponents);
 		
 		var gamma = options.gamma === undefined ? 1 : options.gamma;
 		

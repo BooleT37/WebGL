@@ -18,7 +18,6 @@
 	<script id="fragment_shader" type="x-shader/x-fragment">
 		precision mediump float;
 		uniform sampler2D u_image;
-		uniform vec4 u_colorComponents;
 		uniform float u_gamma;
 		uniform mat4 u_colorMatrix4x4;
 		uniform vec4 u_colorMatrixLastRow;
@@ -26,7 +25,6 @@
 		
 		void main() {
 			vec4 color = texture2D(u_image, v_texCoord);
-			color.rgba = vec4(color.r * u_colorComponents[0], color.g * u_colorComponents[1], color.b * u_colorComponents[2], color.a * u_colorComponents[3]);
 			color.rgba = vec4(pow(color.r, u_gamma), pow(color.g, u_gamma), pow(color.b, u_gamma), color.a);
 			color.rgba = color * u_colorMatrix4x4 + u_colorMatrixLastRow;
 			gl_FragColor = color;
