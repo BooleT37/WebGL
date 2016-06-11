@@ -17,9 +17,11 @@ class Program {
 			self.img.onload = function() {
 				self.processor = new WebglImageProcessor(self.img, document.getElementById("canvas"));
 				self.processor.render();
+				self.enableControls();
 			}
 		}
 		
+		self.getControlsRefs();		
 		self.initializeButtonHandlers();
 		
 		self.linkSliderAndInput(document.getElementById("rotate_slider"), document.getElementById("degrees_input"));
@@ -27,12 +29,13 @@ class Program {
 		self.linkSliderAndInput(document.getElementById("g_component_slider"), document.getElementById("g_component_input"));
 		self.linkSliderAndInput(document.getElementById("b_component_slider"), document.getElementById("b_component_input"));
 		self.linkSliderAndInput(document.getElementById("a_component_slider"), document.getElementById("a_component_input"));
+		self.linkSliderAndInput(document.getElementById("gamma_slider"), document.getElementById("gamma_input"));
 	}
 	
 	linkSliderAndInput(slider, input) {
 		var event = new Event('input');
 		input.addEventListener('input', function() {
-			slider.value = parseInt(input.value, 10);
+			slider.value = input.value;
 			slider.dispatchEvent(event);
 		});
 		
@@ -43,56 +46,59 @@ class Program {
 
 	initializeButtonHandlers() {
 		var self = this;
-		var turnGrayscaleButton = document.getElementById("turn_grayscale_button"),
-			restoreButton = document.getElementById("restore_button"),
-			rotateSlider = document.getElementById("rotate_slider"),
-			degreesInput = document.getElementById("degrees_input"),
-			saveButton = document.getElementById("save_button"),
-			rComponentSlider = document.getElementById("r_component_slider"),
-			gComponentSlider = document.getElementById("g_component_slider"),
-			bComponentSlider = document.getElementById("b_component_slider"),
-			aComponentSlider = document.getElementById("a_component_slider");
 			
 		var options = {};
 		
 		//Turn grayscale
-		turnGrayscaleButton.removeEvent
-		turnGrayscaleButton.onclick = function() {
+		self.turnGrayscaleButton.removeEvent
+		self.turnGrayscaleButton.onclick = function() {
 			options.turnGrayscale = true;
 			self.processor.render(options);
 		}
 		
 		//Rotate
-		rotateSlider.addEventListener('input', function() {
-			options.rotationAngle = rotateSlider.value;
+		self.rotateSlider.addEventListener('input', function() {
+			options.rotationAngle = self.rotateSlider.value;
 			self.processor.render(options);
 		});
 		
-		restoreButton.onclick = function() {
+		self.restoreButton.onclick = function() {
 			options = {};
 			self.processor.render(options);
-			degreesInput.value = 0;
-			rotateSlider.value = 0;
+			self.degreesInput.value = 0;
+			self.rotateSlider.value = 0;
+			self.rComponentSlider.value = 100;
+			self.rComponentInput.value = 100;
+			self.gComponentSlider.value = 100;
+			self.gComponentInput.value = 100;
+			self.bComponentSlider.value = 100;
+			self.bComponentInput.value = 100;
+			self.aComponentSlider.value = 100;
+			self.aComponentInput.value = 100;
 		}
 		
 		function applyColorComponents() {			
 			options.colorComponents = {
-				r: rComponentSlider.value,
-				g: gComponentSlider.value,
-				b: bComponentSlider.value,
-				a: aComponentSlider.value
+				r: self.rComponentSlider.value,
+				g: self.gComponentSlider.value,
+				b: self.bComponentSlider.value,
+				a: self.aComponentSlider.value
 			}
 			self.processor.render(options);
 		}
 		
-		rComponentSlider.addEventListener('input', applyColorComponents);
-		gComponentSlider.addEventListener('input', applyColorComponents);
-		bComponentSlider.addEventListener('input', applyColorComponents);
-		aComponentSlider.addEventListener('input', applyColorComponents);
+		self.rComponentSlider.addEventListener('input', applyColorComponents);
+		self.gComponentSlider.addEventListener('input', applyColorComponents);
+		self.bComponentSlider.addEventListener('input', applyColorComponents);
+		self.aComponentSlider.addEventListener('input', applyColorComponents);
 		
+		self.gammaSlider.addEventListener('input', function() {
+			options.gamma = self.gammaSlider.value;
+			self.processor.render(options);
+		});
 		
 		//save
-		saveButton.onclick = function() {
+		self.saveButton.onclick = function() {
 			var tempCanvas = document.createElement('canvas');
 			tempCanvas.style.display = "none";
 			document.body.appendChild(tempCanvas);
@@ -114,8 +120,42 @@ class Program {
 			download.click();
 		}
 		
-		turnGrayscaleButton.disabled = false;
-		restoreButton.disabled = false;
-		saveButton.disabled = false;
+	}
+	
+	enableControls() {
+		this.turnGrayscaleButton.disabled = false;
+		this.restoreButton.disabled = false;
+		this.rotateSlider.disabled = false;
+		this.degreesInput.disabled = false;
+		this.saveButton.disabled = false;
+		this.saveButton.disabled = false;
+		this.rComponentSlider.disabled = false;
+		this.rComponentInput.disabled = false;
+		this.gComponentSlider.disabled = false;
+		this.gComponentInput.disabled = false;
+		this.bComponentSlider.disabled = false;
+		this.bComponentInput.disabled = false;
+		this.aComponentSlider.disabled = false;
+		this.aComponentInput.disabled = false;
+		this.gammaSlider.disabled = false;
+		this.gammaInput.disabled = false;
+	}
+	
+	getControlsRefs() {
+		this.turnGrayscaleButton = document.getElementById("turn_grayscale_button"),
+		this.restoreButton = document.getElementById("restore_button"),
+		this.rotateSlider = document.getElementById("rotate_slider"),
+		this.degreesInput = document.getElementById("degrees_input"),
+		this.saveButton = document.getElementById("save_button"),
+		this.rComponentSlider = document.getElementById("r_component_slider"),
+		this.rComponentInput = document.getElementById("r_component_input"),
+		this.gComponentSlider = document.getElementById("g_component_slider"),
+		this.gComponentInput = document.getElementById("g_component_input"),
+		this.bComponentSlider = document.getElementById("b_component_slider"),
+		this.bComponentInput = document.getElementById("b_component_input"),
+		this.aComponentSlider = document.getElementById("a_component_slider"),
+		this.aComponentInput = document.getElementById("a_component_input"),
+		this.gammaSlider = document.getElementById("gamma_slider"),
+		this.gammaInput = document.getElementById("gamma_input");
 	}
 }

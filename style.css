@@ -48,6 +48,8 @@ body {
 }
 .color_component_slider {
 	width: 90px;
+}
+input[type="range"] {
 	vertical-align: -6px;
 }
 .color_component_input {
@@ -55,4 +57,13 @@ body {
 }
 .percent_sign {
     color: gray;
+}
+#gamma_text {
+	display: inline-block;
+}
+#gamma_slider {
+	width: 62px;
+}
+#gamma_input {
+	width: 35px;
 }
