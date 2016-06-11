@@ -81,8 +81,10 @@ class Program {
 		});
 		
 		//Grayscale
-		self.colorMatrixTiles[0].addEventListener('click', function() {
-			self.acivateColorMatrixTile(self.colorMatrixTiles[0]);
+		self.colorMatrixTiles[0].addEventListener('click', function(e) {
+			if (e.target.classList.contains("colorMatrixTile_disabled"))
+				return;
+			self.acivateColorMatrixTile(e.target);
 			renderColorMatrix([
 				0.33,0.59,0.11,0,
 				0.33,0.59,0.11,0,
@@ -91,8 +93,10 @@ class Program {
 			], [0,0,0,0]);
 		});
 		//Invert
-		self.colorMatrixTiles[1].addEventListener('click', function() {
-			self.acivateColorMatrixTile(self.colorMatrixTiles[1]);
+		self.colorMatrixTiles[1].addEventListener('click', function(e) {
+			if (e.target.classList.contains("colorMatrixTile_disabled"))
+				return;
+			self.acivateColorMatrixTile(e.target);
 			renderColorMatrix([
 				-1,0,0,0,
 				0,-1,0,0,
@@ -101,8 +105,10 @@ class Program {
 			], [1,1,1,0]);
 		}),
 		//RGB -> BGR
-		self.colorMatrixTiles[2].addEventListener('click', function() {
-			self.acivateColorMatrixTile(self.colorMatrixTiles[2]);
+		self.colorMatrixTiles[2].addEventListener('click', function(e) {
+			if (e.target.classList.contains("colorMatrixTile_disabled"))
+				return;
+			self.acivateColorMatrixTile(e.target);
 			renderColorMatrix([
 				0,0,1,0,
 				0,1,0,0,
@@ -111,8 +117,10 @@ class Program {
 			], [0,0,0,0]);
 		}),
 		//Sepia
-		self.colorMatrixTiles[3].addEventListener('click', function() {
-			self.acivateColorMatrixTile(self.colorMatrixTiles[3]);
+		self.colorMatrixTiles[3].addEventListener('click', function(e) {
+			if (e.target.classList.contains("colorMatrixTile_disabled"))
+				return;
+			self.acivateColorMatrixTile(e.target);
 			renderColorMatrix([
 				0.393,0.769,0.189,0,
 				0.349,0.686,0.168,0,
@@ -121,8 +129,10 @@ class Program {
 			], [0,0,0,0]);
 		}),
 		//Black & White
-		self.colorMatrixTiles[4].addEventListener('click', function() {
-			self.acivateColorMatrixTile(self.colorMatrixTiles[4]);
+		self.colorMatrixTiles[4].addEventListener('click', function(e) {
+			if (e.target.classList.contains("colorMatrixTile_disabled"))
+				return;
+			self.acivateColorMatrixTile(e.target);
 			renderColorMatrix([
 				1.5,1.5,1.5,0,
 				1.5,1.5,1.5,0,
@@ -131,8 +141,10 @@ class Program {
 			], [-1,-1,-1,0]);
 		}),
 		//Polaroid Color
-		self.colorMatrixTiles[5].addEventListener('click', function() {
-			self.acivateColorMatrixTile(self.colorMatrixTiles[5]);
+		self.colorMatrixTiles[5].addEventListener('click', function(e) {
+			if (e.target.classList.contains("colorMatrixTile_disabled"))
+				return;
+			self.acivateColorMatrixTile(e.target);
 			renderColorMatrix([
 				1.438,-0.122,-0.016,0,
 				-0.062,1.378,-0.016,0,
@@ -141,8 +153,10 @@ class Program {
 			], [-0.03,0.05,-0.02,0]);
 		}),
 		//White to Alpha
-		self.colorMatrixTiles[6].addEventListener('click', function() {
-			self.acivateColorMatrixTile(self.colorMatrixTiles[6]);
+		self.colorMatrixTiles[6].addEventListener('click', function(e) {
+			if (e.target.classList.contains("colorMatrixTile_disabled"))
+				return;
+			self.acivateColorMatrixTile(e.target);
 			renderColorMatrix([
 				1,0,0,0,
 				0,1,0,0,
@@ -195,6 +209,7 @@ class Program {
 	}
 	
 	acivateColorMatrixTile(tile) {
+		this.deactivateAllColorMatrixTiles();
 		tile.classList.add('colorMatrixTile_active');
 	}
 	
