@@ -17,20 +17,18 @@
 	</script>
 	<script id="fragment_shader" type="x-shader/x-fragment">
 		precision mediump float;
-		uniform bool u_turnGrayscale;
 		uniform sampler2D u_image;
 		uniform vec4 u_colorComponents;
 		uniform float u_gamma;
+		uniform mat4 u_colorMatrix4x4;
+		uniform vec4 u_colorMatrixLastRow;
 		varying vec2 v_texCoord;
 		
 		void main() {
 			vec4 color = texture2D(u_image, v_texCoord);
-			if (u_turnGrayscale) {
-				float avg = (color.r + color.g + color.b) / 3.0;
-				color.rgb = vec3(avg, avg, avg);
-			}
 			color.rgba = vec4(color.r * u_colorComponents[0], color.g * u_colorComponents[1], color.b * u_colorComponents[2], color.a * u_colorComponents[3]);
 			color.rgba = vec4(pow(color.r, u_gamma), pow(color.g, u_gamma), pow(color.b, u_gamma), color.a);
+			color.rgba = color * u_colorMatrix4x4 + u_colorMatrixLastRow;
 			gl_FragColor = color;
 		}
 	</script>
@@ -47,26 +45,25 @@
 			<canvas id="canvas" width="640" height="480" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
 		</div>
 		<div id="buttons_area">
-			<button id="turn_grayscale_button" disabled="disabled">Сделать черно-белым</button>
 			<div id="rotate_text">Повернуть на</div><input id="degrees_input" value="0" min="0" max="359" type="number" disabled="disabled"></input>&#176;
 			<input id="rotate_slider" type="range" min="0" max="359" step="1" value="0" disabled="disabled">
 			<div class = "color_component_selector">
-				<div class="color_component_text">R:</div>
+				<div class="color_component_text"><span style="color: #AF0101">R</span>:</div>
 				<input class="color_component_slider" id="r_component_slider" type="range" min="0" max="100" step="1" value="100" disabled="disabled">
 				<input class="color_component_input" id="r_component_input" value="100" min="0" max="100" type="number" disabled="disabled"></input><span class="percent_sign">%</class>
 			</div>
 			<div class = "color_component_selector">
-				<div class="color_component_text">G:</div>
+				<div class="color_component_text"><span style="color: #005F00">G</span>:</div>
 				<input class="color_component_slider" id="g_component_slider" type="range" min="0" max="100" step="1" value="100" disabled="disabled">
 				<input class="color_component_input" id="g_component_input" value="100" min="0" max="100" type="number" disabled="disabled"></input><span class="percent_sign">%</class>
 			</div>
 			<div class = "color_component_selector">
-				<div class="color_component_text">B:</div>
+				<div class="color_component_text"><span style="color: #0202C0">B</span>:</div>
 				<input class="color_component_slider" id="b_component_slider" type="range" min="0" max="100" step="1" value="100" disabled="disabled">
 				<input class="color_component_input" id="b_component_input" value="100" min="0" max="100" type="number" disabled="disabled"></input><span class="percent_sign">%</class>
 			</div>
 			<div class = "color_component_selector">
-				<div class="color_component_text">A:</div>
+				<div class="color_component_text"><span style="color: gray">A</span>:</div>
 				<input class="color_component_slider" id="a_component_slider" type="range" min="0" max="100" step="1" value="100" disabled="disabled">
 				<input class="color_component_input" id="a_component_input" value="100" min="0" max="100" type="number" disabled="disabled"></input><span class="percent_sign">%</class>
 			</div>
@@ -74,6 +71,16 @@
 				<div id="gamma_text">Гамма:</div>
 				<input id="gamma_slider" type="range" min="0" max="4" step=0.1 value="1" disabled="disabled">
 				<input id="gamma_input" value="1" min="0" max="4" type="number" step=0.1 disabled="disabled"></input>
+			</div>
+			<div>Матричные преобразования цвета:</div>
+			<div>
+				<div class="colorMatrixTile colorMatrixTile_disabled" id="colorMatrixTile_02" title="Оттенки серого"></div>
+				<div class="colorMatrixTile colorMatrixTile_disabled" id="colorMatrixTile_03" title="Инверсия"></div>
+				<div class="colorMatrixTile colorMatrixTile_disabled" id="colorMatrixTile_04" title="RGB -> BGR"></div>
+				<div class="colorMatrixTile colorMatrixTile_disabled" id="colorMatrixTile_05" title="Сепия"></div>
+				<div class="colorMatrixTile colorMatrixTile_disabled" id="colorMatrixTile_06" title="Черно-белый вариант"></div>
+				<div class="colorMatrixTile colorMatrixTile_disabled" id="colorMatrixTile_07" title="Цвет Polaroid"></div>
+				<div class="colorMatrixTile colorMatrixTile_disabled" id="colorMatrixTile_08" title="Белый цвет в альфа-канал"></div>
 			</div>
 			<button id="restore_button" disabled="disabled">Восстановить</button>
 			<button id="save_button" disabled="disabled">Сохранить изображение</button>

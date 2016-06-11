@@ -57,9 +57,10 @@ class WebglImageProcessor {
 		
 		this.u_locations = {
 			matrix: gl.getUniformLocation(program, "u_matrix"),
-			turnGrayscale: gl.getUniformLocation(program, "u_turnGrayscale"),
 			colorComponents: gl.getUniformLocation(program, "u_colorComponents"),
-			gamma: gl.getUniformLocation(program, "u_gamma")
+			gamma: gl.getUniformLocation(program, "u_gamma"),
+			colorMatrix4x4: gl.getUniformLocation(program, "u_colorMatrix4x4"),
+			colorMatrixLastRow: gl.getUniformLocation(program, "u_colorMatrixLastRow")
 		}
 	}
 	
@@ -72,11 +73,7 @@ class WebglImageProcessor {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
 		var imgWidth = this.img.width,
-			imgHeight = this.img.height;	
-	
-		// look up uniform locations
-		
-		gl.uniform1f(this.u_locations.turnGrayscale, options.turnGrayscale || false);
+			imgHeight = this.img.height;
 		
 		var translationMatrix = [
 			1, 0, 0,
@@ -166,6 +163,9 @@ class WebglImageProcessor {
 			]
 		}
 		
+		var M = this.dotProduct(scaleMatrix, translationMatrix);
+		M = this.dotProduct(M, rotationMatrix);
+		
 		var colorComponents = [1, 1, 1, 1];
 		if (options.colorComponents !== undefined)
 			colorComponents = [
@@ -181,8 +181,20 @@ class WebglImageProcessor {
 		
 		gl.uniform1f(this.u_locations.gamma, gamma);
 		
-		var M = this.dotProduct(scaleMatrix, translationMatrix);
-		M = this.dotProduct(M, rotationMatrix);
+		if (options.colorMatrix === undefined)
+			options.colorMatrix = {
+				matrix4x4: [
+					1,0,0,0,
+					0,1,0,0,
+					0,0,1,0,
+					0,0,0,1
+				],
+				lastRow: [0,0,0,0]
+			};
+		
+			
+		gl.uniformMatrix4fv(this.u_locations.colorMatrix4x4, false, options.colorMatrix.matrix4x4);
+		gl.uniform4fv(this.u_locations.colorMatrixLastRow, options.colorMatrix.lastRow);
 		
 		// build a matrix that will stretch our
 		// unit quad to our desired size and location

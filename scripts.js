@@ -37,13 +37,6 @@ class Program {
 	initializeButtonHandlers() {
 		var self = this;
 		
-		//Turn grayscale
-		self.turnGrayscaleButton.removeEvent
-		self.turnGrayscaleButton.onclick = function() {
-			self.options.turnGrayscale = true;
-			self.processor.render(self.options);
-		}
-		
 		//Rotate
 		self.rotateSlider.addEventListener('input', function() {
 			self.options.rotationAngle = self.rotateSlider.value;
@@ -76,6 +69,86 @@ class Program {
 			self.processor.render(self.options);
 		});
 		
+		function renderColorMatrix(matrix, lastRow) {
+			self.options.colorMatrix = {
+				matrix4x4: matrix,
+				lastRow: lastRow
+			};
+			self.processor.render(self.options);
+		}
+		
+		//Grayscale
+		self.colorMatrixTiles[0].addEventListener('click', function() {
+			self.acivateColorMatrixTile(self.colorMatrixTiles[0]);
+			renderColorMatrix([
+				0.33,0.59,0.11,0,
+				0.33,0.59,0.11,0,
+				0.33,0.59,0.11,0,
+				0,0,0,1
+			], [0,0,0,0]);
+		});
+		//Invert
+		self.colorMatrixTiles[1].addEventListener('click', function() {
+			self.acivateColorMatrixTile(self.colorMatrixTiles[1]);
+			renderColorMatrix([
+				-1,0,0,0,
+				0,-1,0,0,
+				0,0,-1,0,
+				0,0,0,1
+			], [1,1,1,0]);
+		}),
+		//RGB -> BGR
+		self.colorMatrixTiles[2].addEventListener('click', function() {
+			self.acivateColorMatrixTile(self.colorMatrixTiles[2]);
+			renderColorMatrix([
+				0,0,1,0,
+				0,1,0,0,
+				1,0,0,0,
+				0,0,0,1
+			], [0,0,0,0]);
+		}),
+		//Sepia
+		self.colorMatrixTiles[3].addEventListener('click', function() {
+			self.acivateColorMatrixTile(self.colorMatrixTiles[3]);
+			renderColorMatrix([
+				0.393,0.769,0.189,0,
+				0.349,0.686,0.168,0,
+				0.272,0.534,0.131,0,
+				0,0,0,1
+			], [0,0,0,0]);
+		}),
+		//Black & White
+		self.colorMatrixTiles[4].addEventListener('click', function() {
+			self.acivateColorMatrixTile(self.colorMatrixTiles[4]);
+			renderColorMatrix([
+				1.5,1.5,1.5,0,
+				1.5,1.5,1.5,0,
+				1.5,1.5,1.5,0,
+				0,0,0,1
+			], [-1,-1,-1,0]);
+		}),
+		//Polaroid Color
+		self.colorMatrixTiles[5].addEventListener('click', function() {
+			self.acivateColorMatrixTile(self.colorMatrixTiles[5]);
+			renderColorMatrix([
+				1.438,-0.122,-0.016,0,
+				-0.062,1.378,-0.016,0,
+				-0.062,-0.122,1.483,0,
+				0,0,0,1
+			], [-0.03,0.05,-0.02,0]);
+		}),
+		//White to Alpha
+		self.colorMatrixTiles[6].addEventListener('click', function() {
+			self.acivateColorMatrixTile(self.colorMatrixTiles[6]);
+			renderColorMatrix([
+				1,0,0,0,
+				0,1,0,0,
+				0,0,1,0,
+				-1,-1,-1,1
+			], [0,0,0,0]);
+		}),
+		
+		
 		//save
 		self.saveButton.onclick = function() {
 			var tempCanvas = document.createElement('canvas');
@@ -97,8 +170,7 @@ class Program {
 			download.href = image;
 			download.download = self.file.name;
 			download.click();
-		}
-		
+		}		
 	}
 	
 	linkSliderAndInput(slider, input) {
@@ -111,6 +183,16 @@ class Program {
 		slider.addEventListener('input', function() {
 			input.value = slider.value;
 		});
+	}
+	
+	deactivateAllColorMatrixTiles() {
+		var colorMatrixTiles = document.getElementsByClassName('colorMatrixTile');
+		for (var i = 0; i < colorMatrixTiles.length; i++)
+			colorMatrixTiles[i].classList.remove('colorMatrixTile_active');
+	}
+	
+	acivateColorMatrixTile(tile) {
+		tile.classList.add('colorMatrixTile_active');
 	}
 	
 	resetControls() {
@@ -126,10 +208,10 @@ class Program {
 		this.aComponentInput.value = 100;
 		this.gammaSlider.value = 1;
 		this.gammaInput.value = 1;
+		this.deactivateAllColorMatrixTiles();
 	}
 	
 	enableControls() {
-		this.turnGrayscaleButton.disabled = false;
 		this.restoreButton.disabled = false;
 		this.rotateSlider.disabled = false;
 		this.degreesInput.disabled = false;
@@ -145,10 +227,10 @@ class Program {
 		this.aComponentInput.disabled = false;
 		this.gammaSlider.disabled = false;
 		this.gammaInput.disabled = false;
+		this.colorMatrixTiles.forEach(function(tile) { tile.classList.remove('colorMatrixTile_disabled') });
 	}
 	
 	getControlsRefs() {
-		this.turnGrayscaleButton = document.getElementById("turn_grayscale_button"),
 		this.restoreButton = document.getElementById("restore_button"),
 		this.rotateSlider = document.getElementById("rotate_slider"),
 		this.degreesInput = document.getElementById("degrees_input"),
@@ -163,5 +245,14 @@ class Program {
 		this.aComponentInput = document.getElementById("a_component_input"),
 		this.gammaSlider = document.getElementById("gamma_slider"),
 		this.gammaInput = document.getElementById("gamma_input");
+		this.colorMatrixTiles = [
+			document.getElementById("colorMatrixTile_02"),
+			document.getElementById("colorMatrixTile_03"),
+			document.getElementById("colorMatrixTile_04"),
+			document.getElementById("colorMatrixTile_05"),
+			document.getElementById("colorMatrixTile_06"),
+			document.getElementById("colorMatrixTile_07"),
+			document.getElementById("colorMatrixTile_08")
+		]
 	}
 }

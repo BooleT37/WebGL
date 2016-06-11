@@ -26,7 +26,7 @@ body {
 #buttons_area button {
 	margin-bottom: 5px;
 }
-#turn_grayscale_button {
+#rotate_text {
     margin-top: 72px;
 }
 #save_button {
@@ -66,4 +66,64 @@ input[type="range"] {
 }
 #gamma_input {
 	width: 35px;
+}
+#restore_button {
+	margin-top:10px;
+}
+.colorMatrixTile {
+	display: inline-block;
+	border: solid 2px lightgray;
+	margin: 4px 11px 4px 0px;
+	width: 38px;
+	height: 30px;
+}
+.colorMatrixTile:hover {
+	cursor: pointer;
+	border: solid 2px DarkGray;
+}
+
+.colorMatrixTile_active {
+	border: solid 2px DimGray;
+}
+
+.colorMatrixTile_active:hover {
+	border: solid 2px DimGray;
+}
+
+.colorMatrixTile_disabled {
+	background-position-y: 30px;
+	border: solid 2px WhiteSmoke;
+}
+
+.colorMatrixTile_disabled:hover {
+	border: solid 2px WhiteSmoke;
+	cursor: default;
+}
+
+#colorMatrixTile_02 {
+	background-image: url('Images/ColorMatrix02.jpg');
+}
+
+#colorMatrixTile_03 {
+	background-image: url('Images/ColorMatrix03.jpg');
+}
+
+#colorMatrixTile_04 {
+	background-image: url('Images/ColorMatrix04.jpg');
+}
+
+#colorMatrixTile_05 {
+	background-image: url('Images/ColorMatrix05.jpg');
+}
+
+#colorMatrixTile_06 {
+	background-image: url('Images/ColorMatrix06.jpg');
+}
+
+#colorMatrixTile_07 {
+	background-image: url('Images/ColorMatrix07.jpg');
+}
+
+#colorMatrixTile_08 {
+	background-image: url('Images/ColorMatrix08.jpg');
 }
