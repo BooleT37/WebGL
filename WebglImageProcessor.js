@@ -63,7 +63,7 @@ class WebglImageProcessor {
 		}
 	}
 	
-	//render image in canvas and apply given transformations to it successively
+	//render image in canvas and apply given transformations to it
 	render(options) {
 		if (options === undefined)
 			options = {};

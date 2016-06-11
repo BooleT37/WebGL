@@ -18,6 +18,8 @@ class Program {
 				self.processor = new WebglImageProcessor(self.img, document.getElementById("canvas"));
 				self.processor.render();
 				self.enableControls();
+				self.resetControls();
+				self.options = {};
 			}
 		}
 		
@@ -31,6 +33,73 @@ class Program {
 		self.linkSliderAndInput(document.getElementById("a_component_slider"), document.getElementById("a_component_input"));
 		self.linkSliderAndInput(document.getElementById("gamma_slider"), document.getElementById("gamma_input"));
 	}
+
+	initializeButtonHandlers() {
+		var self = this;
+		
+		//Turn grayscale
+		self.turnGrayscaleButton.removeEvent
+		self.turnGrayscaleButton.onclick = function() {
+			self.options.turnGrayscale = true;
+			self.processor.render(self.options);
+		}
+		
+		//Rotate
+		self.rotateSlider.addEventListener('input', function() {
+			self.options.rotationAngle = self.rotateSlider.value;
+			self.processor.render(self.options);
+		});
+		
+		self.restoreButton.onclick = function() {
+			self.options = {};
+			self.processor.render(self.options);
+			self.resetControls();
+		}
+		
+		function applyColorComponents() {			
+			self.options.colorComponents = {
+				r: self.rComponentSlider.value,
+				g: self.gComponentSlider.value,
+				b: self.bComponentSlider.value,
+				a: self.aComponentSlider.value
+			}
+			self.processor.render(self.options);
+		}
+		
+		self.rComponentSlider.addEventListener('input', applyColorComponents);
+		self.gComponentSlider.addEventListener('input', applyColorComponents);
+		self.bComponentSlider.addEventListener('input', applyColorComponents);
+		self.aComponentSlider.addEventListener('input', applyColorComponents);
+		
+		self.gammaSlider.addEventListener('input', function() {
+			self.options.gamma = self.gammaSlider.value;
+			self.processor.render(self.options);
+		});
+		
+		//save
+		self.saveButton.onclick = function() {
+			var tempCanvas = document.createElement('canvas');
+			tempCanvas.style.display = "none";
+			document.body.appendChild(tempCanvas);
+			
+			var tempProcessor = new WebglImageProcessor(self.img, tempCanvas);
+			tempCanvas.width = self.img.width;
+			tempCanvas.height = self.img.height;
+			tempProcessor.gl.viewport(0, 0, self.img.width, self.img.height);
+			
+			self.options.fitCanvas = true;
+			tempProcessor.render(self.options);
+			var image = tempCanvas.toDataURL(self.file.type); //TODO big files transform incorrectly, needs fixing
+			document.body.removeChild(tempCanvas);
+			self.options.fitCanvas = false;
+			
+			var download = document.createElement('a');
+			download.href = image;
+			download.download = self.file.name;
+			download.click();
+		}
+		
+	}
 	
 	linkSliderAndInput(slider, input) {
 		var event = new Event('input');
@@ -43,83 +112,20 @@ class Program {
 			input.value = slider.value;
 		});
 	}
-
-	initializeButtonHandlers() {
-		var self = this;
-			
-		var options = {};
-		
-		//Turn grayscale
-		self.turnGrayscaleButton.removeEvent
-		self.turnGrayscaleButton.onclick = function() {
-			options.turnGrayscale = true;
-			self.processor.render(options);
-		}
-		
-		//Rotate
-		self.rotateSlider.addEventListener('input', function() {
-			options.rotationAngle = self.rotateSlider.value;
-			self.processor.render(options);
-		});
-		
-		self.restoreButton.onclick = function() {
-			options = {};
-			self.processor.render(options);
-			self.degreesInput.value = 0;
-			self.rotateSlider.value = 0;
-			self.rComponentSlider.value = 100;
-			self.rComponentInput.value = 100;
-			self.gComponentSlider.value = 100;
-			self.gComponentInput.value = 100;
-			self.bComponentSlider.value = 100;
-			self.bComponentInput.value = 100;
-			self.aComponentSlider.value = 100;
-			self.aComponentInput.value = 100;
-		}
-		
-		function applyColorComponents() {			
-			options.colorComponents = {
-				r: self.rComponentSlider.value,
-				g: self.gComponentSlider.value,
-				b: self.bComponentSlider.value,
-				a: self.aComponentSlider.value
-			}
-			self.processor.render(options);
-		}
-		
-		self.rComponentSlider.addEventListener('input', applyColorComponents);
-		self.gComponentSlider.addEventListener('input', applyColorComponents);
-		self.bComponentSlider.addEventListener('input', applyColorComponents);
-		self.aComponentSlider.addEventListener('input', applyColorComponents);
-		
-		self.gammaSlider.addEventListener('input', function() {
-			options.gamma = self.gammaSlider.value;
-			self.processor.render(options);
-		});
-		
-		//save
-		self.saveButton.onclick = function() {
-			var tempCanvas = document.createElement('canvas');
-			tempCanvas.style.display = "none";
-			document.body.appendChild(tempCanvas);
-			
-			tempProcessor = new WebglImageProcessor(self.img, tempCanvas);
-			tempCanvas.width = self.img.width;
-			tempCanvas.height = self.img.height;
-			tempProcessor.gl.viewport(0, 0, self.img.width, self.img.height);
-			
-			options.fitCanvas = true;
-			tempProcessor.render(options);
-			var image = tempCanvas.toDataURL(self.imgFile.type); //TODO big files transform incorrectly, needs fixing
-			document.body.removeChild(tempCanvas);
-			options.fitCanvas = false;
-			
-			var download = document.createElement('a');
-			download.href = image;
-			download.download = self.imgFile.name;
-			download.click();
-		}
-		
+	
+	resetControls() {
+		this.degreesInput.value = 0;
+		this.rotateSlider.value = 0;
+		this.rComponentSlider.value = 100;
+		this.rComponentInput.value = 100;
+		this.gComponentSlider.value = 100;
+		this.gComponentInput.value = 100;
+		this.bComponentSlider.value = 100;
+		this.bComponentInput.value = 100;
+		this.aComponentSlider.value = 100;
+		this.aComponentInput.value = 100;
+		this.gammaSlider.value = 1;
+		this.gammaInput.value = 1;
 	}
 	
 	enableControls() {
