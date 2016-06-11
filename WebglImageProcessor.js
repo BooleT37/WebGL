@@ -19,7 +19,7 @@ class WebglImageProcessor {
 			console.error(gl.getProgramInfoLog(program));
 		}
 		
-		gl.clearColor(1.0, 1.0, 1.0, 1.0);
+		gl.clearColor(0.0, 0.0, 0.0, 0.0);
 		
 		var positionLocation = gl.getAttribLocation(program, "a_position"); 
 		

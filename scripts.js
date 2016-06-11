@@ -98,6 +98,7 @@ function initializeButtonHandlers(img, processor, imgFile) {
 		tempProcessor.render(options);
 		var image = tempCanvas.toDataURL(imgFile.type); //TODO big files transform incorrectly, needs fixing
 		document.body.removeChild(tempCanvas);
+		options.fitCanvas = false;
 		
 		var download = document.createElement('a');
 		download.href = image;
