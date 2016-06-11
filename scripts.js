@@ -10,57 +10,94 @@ function onLoad() {
 		img.src = url;
 		
 		img.onload = function() {
-			processor = new WebglImageProcessor(img);
-			processor.render([false, false]);
+			processor = new WebglImageProcessor(img, document.getElementById("canvas"));
+			processor.render();
 			initializeButtonHandlers(img, processor, file);
 		}
-	}	
+	}
+	
+	function linkSliderAndInput(slider, input) {
+		var event = new Event('input');
+		input.addEventListener('input', function() {
+			slider.value = parseInt(input.value, 10);
+			slider.dispatchEvent(event);
+		});
+		
+		slider.addEventListener('input', function() {
+			input.value = slider.value;
+		});
+	}
+	
+	linkSliderAndInput(document.getElementById("rotate_slider"), document.getElementById("degrees_input"));
+	linkSliderAndInput(document.getElementById("r_component_slider"), document.getElementById("r_component_input"));
+	linkSliderAndInput(document.getElementById("g_component_slider"), document.getElementById("g_component_input"));
+	linkSliderAndInput(document.getElementById("b_component_slider"), document.getElementById("b_component_input"));
+	linkSliderAndInput(document.getElementById("a_component_slider"), document.getElementById("a_component_input"));
 }
 
 function initializeButtonHandlers(img, processor, imgFile) {
 	var turnGrayscaleButton = document.getElementById("turn_grayscale_button"),
-		rotateButton = document.getElementById("rotate_button"),
-		cancelButton = document.getElementById("cancel_button"),
-		saveButton = document.getElementById("save_button");
+		restoreButton = document.getElementById("restore_button"),
+		rotateSlider = document.getElementById("rotate_slider"),
+		degreesInput = document.getElementById("degrees_input");
+		saveButton = document.getElementById("save_button"),
+		rComponentSlider = document.getElementById("r_component_slider"),
+		gComponentSlider = document.getElementById("g_component_slider"),
+		bComponentSlider = document.getElementById("b_component_slider"),
+		aComponentSlider = document.getElementById("a_component_slider");
 		
-	var methods = [false, false];
-	var methodsStack = []
+	var options = {};
 	
-	//Method 0:
+	//Turn grayscale
 	turnGrayscaleButton.onclick = function() {
-		methods[0] = true;
-		methodsStack.push(0);
-		processor.render(methods);
+		options.turnGrayscale = true;
+		processor.render(options);
 	}
-	//Method 2:
-	rotateButton.onclick = function() {
-		methods[2] = true;
-		methodsStack.push(2);
-		rotationAngle = parseInt(document.getElementById('degrees_input').value, 10);
-		processor.render(methods, {rotationAngle: rotationAngle});
+	
+	//Rotate
+	rotateSlider.addEventListener('input', function() {
+		options.rotationAngle = rotateSlider.value;
+		processor.render(options);
+	});
+	
+	restoreButton.onclick = function() {
+		options = {};
+		processor.render(options);
+		degreesInput.value = 0;
+		rotateSlider.value = 0;
 	}
-	cancelButton.onclick = function() {
-		if (methodsStack.length > 0) {
-			methods[methodsStack.pop()] = false;
-			processor.render(methods);
+	
+	function applyColorComponents() {			
+		options.colorComponents = {
+			r: rComponentSlider.value,
+			g: gComponentSlider.value,
+	        b: bComponentSlider.value,
+			a: aComponentSlider.value
 		}
+		processor.render(options);
 	}
-	//Method 1:
+	
+	rComponentSlider.addEventListener('input', applyColorComponents);
+	gComponentSlider.addEventListener('input', applyColorComponents);
+	bComponentSlider.addEventListener('input', applyColorComponents);
+	aComponentSlider.addEventListener('input', applyColorComponents);
+	
+	
+	//save
 	saveButton.onclick = function() {
-		var canvas = document.createElement('canvas'),
-			gl = canvas.getContext('webgl', {preserveDrawingBuffer: true}) || canvas.getContext('experimental-webgl', {preserveDrawingBuffer: true});
-		canvas.style.display = "none";
-		document.body.appendChild(canvas);
+		var tempCanvas = document.createElement('canvas');
+		tempCanvas.style.display = "none";
+		document.body.appendChild(tempCanvas);
 		
-		canvas.width = img.width;
-		canvas.height = img.height;
-		gl.viewport(0, 0, img.width, img.height);
+		tempProcessor = new WebglImageProcessor(img, tempCanvas);
+		tempCanvas.width = img.width;
+		tempCanvas.height = img.height;
+		tempProcessor.gl.viewport(0, 0, img.width, img.height);
 		
-		methods[1] = true;
-		processor.render(methods, canvas, gl);
-		var image = canvas.toDataURL(imgFile.type); //TODO big files transform incorrectly, needs fixing
-		document.body.removeChild(canvas);
-		methods[1] = false;
+		options.fitCanvas = true;
+		tempProcessor.render(options);
+		var image = tempCanvas.toDataURL(imgFile.type); //TODO big files transform incorrectly, needs fixing
+		document.body.removeChild(tempCanvas);
 		
 		var download = document.createElement('a');
 		download.href = image;
@@ -69,7 +106,6 @@ function initializeButtonHandlers(img, processor, imgFile) {
 	}
 	
 	turnGrayscaleButton.disabled = false;
-	rotateButton.disabled = false;
-	cancelButton.disabled = false;
+	restoreButton.disabled = false;
 	saveButton.disabled = false;
 }

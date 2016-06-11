@@ -17,16 +17,18 @@
 	</script>
 	<script id="fragment_shader" type="x-shader/x-fragment">
 		precision mediump float;
-		uniform bool u_methods[2];
+		uniform bool u_turnGrayscale;
 		uniform sampler2D u_image;
+		uniform vec4 u_colorComponents;
 		varying vec2 v_texCoord;
 		
 		void main() {
 			vec4 color = texture2D(u_image, v_texCoord);
-			if (u_methods[0]) {
+			if (u_turnGrayscale) {
 				float avg = (color.r + color.g + color.b) / 3.0;
 				color.rgb = vec3(avg, avg, avg);
 			}
+			color.rgba = vec4(color.r * u_colorComponents[0], color.g * u_colorComponents[1], color.b * u_colorComponents[2], color.a * u_colorComponents[3]);
 			gl_FragColor = color;
 		}
 	</script>
@@ -44,8 +46,29 @@
 		</div>
 		<div id="buttons_area">
 			<button id="turn_grayscale_button" disabled="disabled">Сделать черно-белым</button>
-			<button id="rotate_button" disabled="disabled">Повернуть на</button><input id="degrees_input" value="45" type="number"></input>&#176;
-			<button id="cancel_button" disabled="disabled">Отменить</button>
+			<div id="rotate_text">Повернуть на</div><input id="degrees_input" value="0" min="0" max="359" type="number"></input>&#176;
+			<input id="rotate_slider" type="range" min="0" max="359" step="1" value="0">
+			<div class = "color_component_selector">
+				<div class="color_component_text">R:</div>
+				<input width = "30" class="color_component_slider" id="r_component_slider" type="range" min="0" max="100" step="1" value="100">
+				<input class="color_component_input" id="r_component_input" value="100" min="0" max="100" type="number"></input><span class="percent_sign">%</class>
+			</div>
+			<div class = "color_component_selector">
+				<div class="color_component_text">G:</div>
+				<input width = "30" class="color_component_slider" id="g_component_slider" type="range" min="0" max="100" step="1" value="100">
+				<input class="color_component_input" id="g_component_input" value="100" min="0" max="100" type="number"></input><span class="percent_sign">%</class>
+			</div>
+			<div class = "color_component_selector">
+				<div class="color_component_text">B:</div>
+				<input width = "30" class="color_component_slider" id="b_component_slider" type="range" min="0" max="100" step="1" value="100">
+				<input class="color_component_input" id="b_component_input" value="100" min="0" max="100" type="number"></input><span class="percent_sign">%</class>
+			</div>
+			<div class = "color_component_selector">
+				<div class="color_component_text">A:</div>
+				<input width = "30" class="color_component_slider" id="a_component_slider" type="range" min="0" max="100" step="1" value="100">
+				<input class="color_component_input" id="a_component_input" value="100" min="0" max="100" type="number"></input><span class="percent_sign">%</class>
+			</div>
+			<button id="restore_button" disabled="disabled">Восстановить</button>
 			<button id="save_button" disabled="disabled">Сохранить изображение</button>
 		</div>
 	</div>

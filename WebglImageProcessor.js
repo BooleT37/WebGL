@@ -1,52 +1,28 @@
 class WebglImageProcessor {
-	constructor(img, fileName) {
+	constructor(img, canvas) {
 		this.img = img;
-		this.canvas = document.getElementById("canvas");
-		this.gl = canvas.getContext('webgl', {preserveDrawingBuffer: true}) || canvas.getContext('experimental-webgl', {preserveDrawingBuffer: true});
+		this.canvas = canvas;
+		var gl = this.gl = canvas.getContext('webgl', {preserveDrawingBuffer: true}) || canvas.getContext('experimental-webgl', {preserveDrawingBuffer: true});
 		
 		//constants
 		this.VERTEX_SHADER_NAME = "vertex_shader";
-		this.FRAGMENT_SHADER_NAME = "fragment_shader"
-	}
-	
-	//render image in canvas and apply given transformations to it successively
-	render(methods, options) {
-		if (options === undefined)
-			options = {}
-		var canvas = options.canvas || this.canvas,
-			gl = options.gl || this.gl;
-			gl.clearColor(1.0, 1.0, 1.0, 1.0);
-			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-		var	image = this.img;
-		var imgWidth = image.width,
-			imgHeight = image.height;
+		this.FRAGMENT_SHADER_NAME = "fragment_shader";
 		
-		// Инициализация шейдеров
 		var fragmentShader = this.getShader(gl, this.FRAGMENT_SHADER_NAME);
-		var vertexShader = this.getShader(gl, this.VERTEX_SHADER_NAME);		
-		
-		var program = gl.createProgram();
+		var vertexShader = this.getShader(gl, this.VERTEX_SHADER_NAME);
+		var program = this.program = gl.createProgram();
 		gl.attachShader(program, vertexShader);
 		gl.attachShader(program, fragmentShader);
 		gl.linkProgram(program);
-		
-		//console.log(gl.getProgramParameter(program, gl.LINK_STATUS))
 		
 		if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
 			console.error(gl.getProgramInfoLog(program));
 		}
 		
-		gl.useProgram(program);
+		gl.clearColor(1.0, 1.0, 1.0, 1.0);
 		
 		var positionLocation = gl.getAttribLocation(program, "a_position"); 
-	
-		// look up uniform locations
-		var u_matrixLoc = gl.getUniformLocation(program, "u_matrix");
-		var u_methodsLoc = gl.getUniformLocation(program, "u_methods");
 		
-		gl.uniform1fv(u_methodsLoc, methods);
-		
-		// provide texture coordinates for the rectangle.
 		var positionBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
@@ -70,10 +46,34 @@ class WebglImageProcessor {
 		
 		// Upload the image into the texture
 		try {
-			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
+			gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
 		} catch(e) {
-			console.log(e);
+			console.error(e);
 		}
+		
+		gl.useProgram(program);
+		
+		this.u_locations = {
+			matrix: gl.getUniformLocation(program, "u_matrix"),
+			turnGrayscale: gl.getUniformLocation(program, "u_turnGrayscale"),
+			colorComponents: gl.getUniformLocation(program, "u_colorComponents")
+		}
+	}
+	
+	//render image in canvas and apply given transformations to it successively
+	render(options) {
+		if (options === undefined)
+			options = {};
+		var canvas = this.canvas,
+			gl = this.gl;
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		
+		var imgWidth = this.img.width,
+			imgHeight = this.img.height;	
+	
+		// look up uniform locations
+		
+		gl.uniform1f(this.u_locations.turnGrayscale, options.turnGrayscale || false);
 		
 		var translationMatrix = [
 			1, 0, 0,
@@ -91,7 +91,7 @@ class WebglImageProcessor {
 			0, 0, 1
 		];
 		//fit canvas
-		if (methods[1]) {
+		if (options.fitCanvas) {
 			translationMatrix = [
 				1, 0, 0,
 				0, 1, 0,
@@ -109,7 +109,7 @@ class WebglImageProcessor {
 			
 			//It took me 3 hours and 9 notebook pages to count these values for M. Holy shit
 			//If we can fit image in canvas without scaling it:
-			if (kw < 1 && kh < 1) {
+			if (kw < 1 && kh < 1) {				
 				translationMatrix = [
 					1, 0, 0,
 					0, 1, 0,
@@ -151,7 +151,8 @@ class WebglImageProcessor {
 			}
 		}
 		
-		if (methods[2]) {
+		//rotate
+		if (options.rotationAngle) {
 			var angle = options.rotationAngle * Math.PI / 180,
 				s = Math.sin(angle),
 				c = Math.cos(angle);
@@ -162,12 +163,26 @@ class WebglImageProcessor {
 			]
 		}
 		
+		var colorComponents;
+		if (options.colorComponents === undefined)
+			colorComponents = [1, 1, 1, 1];
+		else
+			colorComponents = [
+				options.colorComponents.r / 100,
+				options.colorComponents.g / 100,
+				options.colorComponents.b / 100,
+				options.colorComponents.a / 100
+			];
+			
+		gl.uniform4fv(this.u_locations.colorComponents, colorComponents);
+		
+		
 		var M = this.dotProduct(scaleMatrix, translationMatrix);
 		M = this.dotProduct(M, rotationMatrix);
 		
 		// build a matrix that will stretch our
 		// unit quad to our desired size and location
-		gl.uniformMatrix3fv(u_matrixLoc, false, M);
+		gl.uniformMatrix3fv(this.u_locations.matrix, false, M);
 		
 		// Draw the rectangle.
 		gl.drawArrays(gl.TRIANGLES, 0, 6);

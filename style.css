@@ -21,6 +21,7 @@ body {
 #buttons_area {
     width: 170px;
     text-align: left;
+	font-size: 0.8em;
 }
 #buttons_area button {
 	margin-bottom: 5px;
@@ -31,7 +32,27 @@ body {
 #save_button {
 	margin-top: 20px;
 }
+#rotate_text {
+	display: inline-block;
+}
+#rotate_slider {
+    width: 150px;
+}
 #degrees_input {
 	width: 35px;
 	margin-left: 5px;
+}
+.color_component_text {
+	display: inline-block;
+	width: 12px;
+}
+.color_component_slider {
+	width: 90px;
+	vertical-align: -6px;
+}
+.color_component_input {
+	width: 35px;
+}
+.percent_sign {
+    color: gray;
 }
