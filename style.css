@@ -17,6 +17,9 @@ body {
 	display: inline-block;
     vertical-align: top;
 }
+#webgl_canvas, #plane_canvas, #svg_area {
+	border:1px solid #c3c3c3;
+}
 #buttons_area {
     width: 170px;
     text-align: left;

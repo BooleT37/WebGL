@@ -241,15 +241,25 @@ class Program {
 		self.canvasTechRadio.addEventListener('change', function() {
 			self.onTechChange();
 		});
+		
+		self.svgTechRadio.addEventListener('change', function() {
+			self.onTechChange();
+		});
 	}
 	
 	showCanvas() {
 		if (this.webglTechRadio.checked) {
 			this.webglCanvas.style.display = "block";
 			this.planeCanvas.style.display = "none";
-		} else {
+			this.svgArea.style.display = "none";
+		} else if (this.canvasTechRadio.checked) {
 			this.planeCanvas.style.display = "block";
 			this.webglCanvas.style.display = "none";
+			this.svgArea.style.display = "none";
+		} else {
+			this.svgArea.style.display = "block";
+			this.webglCanvas.style.display = "none";
+			this.planeCanvas.style.display = "none";
 		}
 	}
 	onTechChange() {
@@ -338,6 +348,7 @@ class Program {
 	getControlsRefs() {
 		this.webglCanvas = document.getElementById("webgl_canvas");
 		this.planeCanvas = document.getElementById("plane_canvas");
+		this.svgArea = document.getElementById("svg_area");
 		
 		this.restoreButton = document.getElementById("restore_button"),
 		this.rotateSlider = document.getElementById("rotate_slider"),
@@ -374,6 +385,7 @@ class Program {
 		
 		this.webglTechRadio = document.getElementById("webglTech_radio");
 		this.canvasTechRadio = document.getElementById("canvasTech_radio");
+		this.svgTechRadio = document.getElementById("svgTech_radio");
 	}
 
 	drawInitialImage() {
@@ -385,7 +397,7 @@ class Program {
 		else if (self.canvasTechRadio.checked)
 			self.processor = new CanvasImageProcessor(self.img, self.planeCanvas);
 		else
-			throw new Exception("Wtf, both radio buttons unchecked");
+			self.processor = new SvgImageProcessor(self.img, self.svgArea);
 			
 		self.processor.render();
 		self.enableControls();
