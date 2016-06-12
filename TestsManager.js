@@ -29,4 +29,12 @@ class TestsManager {
 		}
 		return res;
 	}
+	
+	static GenerateRandomGammaValues(n) {
+		var res = [];
+		for (var i = 0; i < n; i++) {
+			res.push(Math.random() * 4);
+		}
+		return res;
+	}
 }

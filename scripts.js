@@ -207,18 +207,20 @@ class Program {
 		});
 		
 		var testTimeDiv = document.getElementById('testTime');
-		var matrices, angles;				
+		var matrices, angles, gammas;				
 		self.speedTestButton.addEventListener('click', function() {
 			var testsCount = parseInt(self.testsCountInput.value, 10);
 			
 			if (self.speedTestCheckbox.checked || matrices === undefined || matrices.length !== testsCount)
 				matrices = TestsManager.GenerateRandomColorMatrices(testsCount),
-				angles = TestsManager.GenerateRandomRotationAngles(testsCount);
+				angles = TestsManager.GenerateRandomRotationAngles(testsCount),
+				gammas = TestsManager.GenerateRandomGammaValues(testsCount);
 				
 			var singleImageRenderingTimes = [];
 			var startTime = window.performance.now();
 			for (var i = 0; i < testsCount; i++) {
 				self.options.rotationAngle = angles[i];
+				self.options.gamma = gammas[i];
 				var singleImageStartTime = window.performance.now();
 				renderColorMatrix(matrices[i].matrix4x4, matrices[i].lastRow);
 				var singleImageEndTime = window.performance.now();
