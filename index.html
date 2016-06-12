@@ -30,7 +30,9 @@
 			gl_FragColor = color;
 		}
 	</script>
+	<script src="MatrixHelpers.js"></script>
 	<script src="WebglImageProcessor.js"></script>
+	<script src="TestsManager.js"></script>
 	<script src="scripts.js"></script>
 	<link rel="icon" type="image/ico" href="favicon.ico">
 	<title>WebGL experimentation</title>
@@ -97,6 +99,11 @@
 			</div>
 			<button id="restore_button" disabled="disabled">Восстановить</button>
 			<button id="save_button" disabled="disabled">Сохранить изображение</button>
+			<div id="speedTest_area">
+				<button id="speedTest_button" disabled="disabled">Тест скорости</button><input id="speedTest_checkbox" type="checkbox" checked="checked" disabled="disabled"/> разл.
+				<div id="testTime"></div>
+				Количество тестов: <input id="testsCount_input" type="number" min="0" value="10" disabled="disabled"/>
+			</div>
 		</div>
 	</div>
 </body>

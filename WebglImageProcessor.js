@@ -74,96 +74,23 @@ class WebglImageProcessor {
 		var imgWidth = this.img.width,
 			imgHeight = this.img.height;
 		
-		var translationMatrix = [
-			1, 0, 0,
-			0, 1, 0,
-			0, 0, 1
-		];
-		var rotationMatrix = [
-			1, 0, 0,
-			0, 1, 0,
-			0, 0, 1
-		];
-		var scaleMatrix = [
-			1, 0, 0,
-			0, 1, 0,
-			0, 0, 1
-		];
+		var scaleTranslationsMatrix;
 		//fit canvas
 		if (options.fitCanvas) {
-			translationMatrix = [
-				1, 0, 0,
-				0, 1, 0,
-				-1, 1, 1
-			];
-			scaleMatrix = [
-				2, 0, 0,
-				0, -2, 0,
-				0, 0, 1
-			];
+			scaleTranslationsMatrix = MatrixHelpers.getFitCanvasMatrix();
 		} else {
 			// convert dst pixel coords to clipspace coords
-			var kw = imgWidth / gl.canvas.width,
-				kh = imgHeight / gl.canvas.height;
-			
-			//It took me 3 hours and 9 notebook pages to count these values for M. Holy shit
-			//If we can fit image in canvas without scaling it:
-			if (kw < 1 && kh < 1) {				
-				translationMatrix = [
-					1, 0, 0,
-					0, 1, 0,
-					-kw, kh, 1
-				];
-				scaleMatrix = [
-					kw * 2, 0, 0,
-					0, -kh * 2, 0,
-					0, 0, 1
-				];
-			} else {
-				//scale and fit width:
-				if (kw >= kh) {
-					var k = kh / kw;
-					translationMatrix = [
-						1, 0, 0,
-						0, 1, 0,
-						-1, k, 1
-					];
-					scaleMatrix = [
-						2, 0, 0,
-						0, -k * 2, 0,
-						0, 0, 1
-					];
-				//scale and fit height
-				} else {
-					var k = kw / kh;
-					translationMatrix = [
-						1, 0, 0,
-						0, 1, 0,
-						-k, 1, 1
-					];
-					scaleMatrix = [
-						k * 2, 0, 0,
-						0, -2, 0,
-						0, 0, 1
-					];
-				}
-			}
+			scaleTranslationsMatrix = MatrixHelpers.getMatrixToFitImageInsideCanvas(imgWidth, imgHeight, gl.canvas.width, gl.canvas.height)
 		}
 		
+		var M;
 		//rotate
 		if (options.rotationAngle) {
-			var angle = options.rotationAngle * Math.PI / 180,
-				s = Math.sin(angle),
-				c = Math.cos(angle);
-			rotationMatrix = [
-				c, -s, 0,
-				s, c, 0,
-				0, 0, 1
-			]
+			var rotationMatrix = MatrixHelpers.getRotationMatrix(options.rotationAngle);
+			M = MatrixHelpers.dotProduct(scaleTranslationsMatrix, rotationMatrix);
+		} else {
+			M = scaleTranslationsMatrix;
 		}
-		
-		var M = this.dotProduct(scaleMatrix, translationMatrix);
-		M = this.dotProduct(M, rotationMatrix);
 		
 		var gamma = options.gamma === undefined ? 1 : options.gamma;
 		
@@ -184,11 +111,8 @@ class WebglImageProcessor {
 		gl.uniformMatrix4fv(this.u_locations.colorMatrix4x4, false, options.colorMatrix.matrix4x4);
 		gl.uniform4fv(this.u_locations.colorMatrixLastRow, options.colorMatrix.lastRow);
 		
-		// build a matrix that will stretch our
-		// unit quad to our desired size and location
 		gl.uniformMatrix3fv(this.u_locations.matrix, false, M);
 		
-		// Draw the rectangle.
 		gl.drawArrays(gl.TRIANGLES, 0, 6);
 	}
 
@@ -228,15 +152,5 @@ class WebglImageProcessor {
 		return shader;
 	}
 	
-	dotProduct(M1, M2) {
-		var sum, res = [];
-		for (var i = 0; i < 3; i++)
-			for (var j = 0; j < 3; j++) {
-				sum = 0;
-				for (var k = 0; k < 3; k++)
-					sum += M1[i * 3 + k] * M2[k * 3 + j]
-				res[i * 3 + j] = sum;
-			}
-		return res;
-	}
+	
 }

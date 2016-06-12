@@ -139,7 +139,7 @@ class Program {
 		}),
 		//RGB -> BGR
 		self.colorMatrixTiles[2].addEventListener('click', function(e) {
-			renderColorMatrixPreset(e, [
+			renderColorMatrixPreset(e, [ 
 				0,0,1,0,
 				0,1,0,0,
 				1,0,0,0,
@@ -185,7 +185,7 @@ class Program {
 		
 		
 		//save
-		self.saveButton.onclick = function() {
+		self.saveButton.addEventListener('click', function() {
 			var tempCanvas = document.createElement('canvas');
 			tempCanvas.style.display = "none";
 			document.body.appendChild(tempCanvas);
@@ -205,7 +205,35 @@ class Program {
 			download.href = image;
 			download.download = self.file.name;
 			download.click();
-		}		
+		});
+		
+		var testTimeDiv = document.getElementById('testTime');
+		var matrices, angles;				
+		self.speedTestButton.addEventListener('click', function() {
+			var testsCount = parseInt(self.testsCountInput.value, 10);
+			
+			if (self.speedTestCheckbox.checked || matrices === undefined || matrices.length !== testsCount)
+				matrices = TestsManager.GenerateRandomColorMatrices(testsCount),
+				angles = TestsManager.GenerateRandomRotationAngles(testsCount);
+				
+			var singleImageRenderingTimes = [];
+			var startTime = window.performance.now();
+			for (var i = 0; i < testsCount; i++) {
+				self.options.rotationAngle = angles[i];
+				var singleImageStartTime = window.performance.now();
+				renderColorMatrix(matrices[i].matrix4x4, matrices[i].lastRow);
+				var singleImageEndTime = window.performance.now();
+				singleImageRenderingTimes[i] = singleImageEndTime - singleImageStartTime;
+			}
+			var endTime = window.performance.now();
+			var timeElapsed = (endTime - startTime);
+			var average = (singleImageRenderingTimes.reduce(function(a, b) {
+				return a + b;
+			})) / testsCount;
+			//console.log(singleImageRenderingTimes);
+			testTimeDiv.textContent = timeElapsed.toFixed(2) + " мс (" + average.toFixed(3) + " мс на 1 шаг)";
+			
+		});
 	}
 	
 	linkSliderAndInput(slider, input) {
@@ -280,6 +308,9 @@ class Program {
 		this.gammaSlider.disabled = false;
 		this.gammaInput.disabled = false;
 		this.colorMatrixTiles.forEach(function(tile) { tile.classList.remove('colorMatrixTile_disabled') });
+		this.speedTestButton.disabled = false;
+		this.testsCountInput.disabled = false;
+		this.speedTestCheckbox.disabled = false;
 	}
 	
 	getControlsRefs() {
@@ -312,5 +343,8 @@ class Program {
 			document.getElementById("colorMatrixTile_07"),
 			document.getElementById("colorMatrixTile_08")
 		]
+		this.speedTestButton = document.getElementById("speedTest_button");
+		this.testsCountInput = document.getElementById("testsCount_input");
+		this.speedTestCheckbox = document.getElementById("speedTest_checkbox");
 	}
 }

@@ -29,7 +29,7 @@ body {
     margin-top: 72px;
 }
 #save_button {
-	margin-top: 20px;
+	margin-top: 5px;
 }
 #rotate_text {
 	display: inline-block;
@@ -125,4 +125,17 @@ input[type="range"] {
 
 #colorMatrixTile_08 {
 	background-image: url('Images/ColorMatrix08.jpg');
+}
+#speedTest_area {
+	margin-top: 5px;
+}
+#testTime {
+	font-weight: 600;
+	height: 17px;
+}
+#speedTest_checkbox {
+	vertical-align: -3px;
+}
+#testsCount_input {
+	width: 45px;
 }
