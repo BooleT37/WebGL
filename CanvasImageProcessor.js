@@ -40,10 +40,10 @@ class CanvasImageProcessor {
 		var M = options.colorMatrix.matrix4x4, R = options.colorMatrix.lastRow;
 		var r, g, b, a;
         for (var i = 0; i < data.length; i += 4) {
-			r = Math.pow(data[i], gamma);
-			g = Math.pow(data[i + 1], gamma);
-			b = Math.pow(data[i + 2], gamma);
-			a = Math.pow(data[i + 3], gamma);
+			r = Math.pow(data[i] / 256, gamma) * 256;
+			g = Math.pow(data[i + 1] / 256, gamma) * 256;;
+			b = Math.pow(data[i + 2] / 256, gamma) * 256;;
+			a = data[i + 3];
 			
 			data[i] = M[0] * r + M[1] * g + M[2] * b + M[3] * a + R[0] * 255;
 			data[i + 1] = M[4] * r + M[5] * g + M[6] * b + M[7] * a + R[1] * 255;
