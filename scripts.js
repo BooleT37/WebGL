@@ -254,8 +254,8 @@ class Program {
 	}
 	onTechChange() {
 		this.showCanvas();
-		//if (this.img !== undefined)
-		//	this.drawInitialImage();
+		if (this.img !== undefined)
+			this.drawInitialImage();
 	}
 	
 	linkSliderAndInput(slider, input) {

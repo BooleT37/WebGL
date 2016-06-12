@@ -20,10 +20,6 @@ class CanvasImageProcessor {
 			imageCoords = this.imageCoords;
 		}
 		
-		//if (options.rotationAngle === undefined)
-		//	options.rotationAngle = 0;
-		//this.context.rotate(options.rotationAngle * Math.PI / 180);
-		
 		var gamma = options.gamma === undefined ? 1 : options.gamma;
 		
 		if (options.colorMatrix === undefined)
