@@ -8,22 +8,21 @@ class Program {
 	
 	run() {
 		var self = this;
+		self.getControlsRefs();
+		
 		document.getElementById("file_input").onchange = function(e) {
+			if (e.target.files.length === 0)
+				return;
 			self.file = e.target.files[0];
 			var url = window.URL.createObjectURL(self.file);
 			self.img = new Image();
 			self.img.src = url;
 			
 			self.img.onload = function() {
-				self.processor = new WebglImageProcessor(self.img, document.getElementById("canvas"));
-				self.processor.render();
-				self.enableControls();
-				self.resetControls();
-				self.options = {};
+				self.drawInitialImage();
 			}
 		}
 		
-		self.getControlsRefs();		
 		self.initializeButtonHandlers();
 		
 		self.linkSliderAndInput(self.rotateSlider, self.degreesInput);
@@ -234,6 +233,29 @@ class Program {
 			testTimeDiv.textContent = timeElapsed.toFixed(2) + " мс (" + average.toFixed(3) + " мс на 1 шаг)";
 			
 		});
+		
+		self.webglTechRadio.addEventListener('change', function() {
+			self.onTechChange();
+		});
+		
+		self.canvasTechRadio.addEventListener('change', function() {
+			self.onTechChange();
+		});
+	}
+	
+	showCanvas() {
+		if (this.webglTechRadio.checked) {
+			this.webglCanvas.style.display = "block";
+			this.planeCanvas.style.display = "none";
+		} else {
+			this.planeCanvas.style.display = "block";
+			this.webglCanvas.style.display = "none";
+		}
+	}
+	onTechChange() {
+		this.showCanvas();
+		//if (this.img !== undefined)
+		//	this.drawInitialImage();
 	}
 	
 	linkSliderAndInput(slider, input) {
@@ -314,6 +336,9 @@ class Program {
 	}
 	
 	getControlsRefs() {
+		this.webglCanvas = document.getElementById("webgl_canvas");
+		this.planeCanvas = document.getElementById("plane_canvas");
+		
 		this.restoreButton = document.getElementById("restore_button"),
 		this.rotateSlider = document.getElementById("rotate_slider"),
 		this.degreesInput = document.getElementById("degrees_input"),
@@ -346,5 +371,25 @@ class Program {
 		this.speedTestButton = document.getElementById("speedTest_button");
 		this.testsCountInput = document.getElementById("testsCount_input");
 		this.speedTestCheckbox = document.getElementById("speedTest_checkbox");
+		
+		this.webglTechRadio = document.getElementById("webglTech_radio");
+		this.canvasTechRadio = document.getElementById("canvasTech_radio");
+	}
+
+	drawInitialImage() {
+		var self = this;
+		var canvas;
+		self.showCanvas();
+		if (self.webglTechRadio.checked)
+			self.processor = new WebglImageProcessor(self.img, self.webglCanvas);
+		else if (self.canvasTechRadio.checked)
+			self.processor = new CanvasImageProcessor(self.img, self.planeCanvas);
+		else
+			throw new Exception("Wtf, both radio buttons unchecked");
+			
+		self.processor.render();
+		self.enableControls();
+		self.resetControls();
+		self.options = {};
 	}
 }

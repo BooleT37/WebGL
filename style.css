@@ -139,3 +139,10 @@ input[type="range"] {
 #testsCount_input {
 	width: 45px;
 }
+
+#techs_area {
+    display: inline-block;
+    vertical-align: top;
+    padding-top: 67px;
+    text-align: left;
+}

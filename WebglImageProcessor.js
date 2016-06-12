@@ -61,6 +61,9 @@ class WebglImageProcessor {
 			colorMatrix4x4: gl.getUniformLocation(program, "u_colorMatrix4x4"),
 			colorMatrixLastRow: gl.getUniformLocation(program, "u_colorMatrixLastRow")
 		}
+		
+		// convert dst pixel coords to clipspace coords
+		this.scaleTranslationsMatrix = MatrixHelpers.getMatrixToFitImageInsideCanvas(this.img.width, this.img.height, gl.canvas.width, gl.canvas.height)
 	}
 	
 	//render image in canvas and apply given transformations to it
@@ -71,16 +74,11 @@ class WebglImageProcessor {
 			gl = this.gl;
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
-		var imgWidth = this.img.width,
-			imgHeight = this.img.height;
-		
 		var scaleTranslationsMatrix;
-		//fit canvas
 		if (options.fitCanvas) {
 			scaleTranslationsMatrix = MatrixHelpers.getFitCanvasMatrix();
 		} else {
-			// convert dst pixel coords to clipspace coords
-			scaleTranslationsMatrix = MatrixHelpers.getMatrixToFitImageInsideCanvas(imgWidth, imgHeight, gl.canvas.width, gl.canvas.height)
+			scaleTranslationsMatrix = this.scaleTranslationsMatrix;
 		}
 		
 		var M;
