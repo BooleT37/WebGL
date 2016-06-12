@@ -32,6 +32,7 @@
 	</script>
 	<script src="MatrixHelpers.js"></script>
 	<script src="WebglImageProcessor.js"></script>
+	<script src="CanvasImageProcessor.js"></script>
 	<script src="TestsManager.js"></script>
 	<script src="scripts.js"></script>
 	<link rel="icon" type="image/ico" href="favicon.ico">
@@ -39,10 +40,15 @@
 </head>
 <body onload="onLoad()">
 	<div id="wrapper">
+		<div id="techs_area">
+			<input type="radio" name="tech" id="webglTech_radio" checked="checked"/>WebGL<br/>
+			<input type="radio" name="tech" id="canvasTech_radio"/>Canvas2D<br/>
+		</div>
 		<div id="image_area">
 			<div id="title">Загрузите файл с компьютера:</div>
 			<input type="file" id="file_input"><br/>
-			<canvas id="canvas" width="800" height="600" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
+			<canvas id="webgl_canvas" width="800" height="600" style="border:1px solid #c3c3c3;">Doesn't work :(</canvas>
+			<canvas id="plane_canvas" width="800" height="600" style="border:1px solid #c3c3c3; display: none">Doesn't work :(</canvas>
 		</div>
 		<div id="buttons_area">
 			<div id="rotate_text">Повернуть на</div><input id="degrees_input" value="0" min="0" max="359" type="number" disabled="disabled"></input>&#176;

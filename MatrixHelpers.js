@@ -52,6 +52,39 @@ class MatrixHelpers {
 		}
 	}
 	
+	static getImageCoordsToFitImageInsideCanvas(imgWidth, imgHeight, canvasWidth, canvasHeight) {
+		var kw = imgWidth / canvasWidth,
+			kh = imgHeight / canvasHeight;
+		
+		if (kw < 1 && kh < 1) {
+			return {
+				x: Math.floor((canvasWidth - imgWidth) / 2),
+				y: Math.floor((canvasHeight - imgHeight) / 2),
+				width: imgWidth,
+				height: imgHeight
+			}
+		} else {
+			//scale and fit width:
+			if (kw >= kh) {
+				var k = kh / kw;
+				return {
+					x: 0,
+					y: Math.floor(canvasHeight * (1 - k) / 2),
+					width: canvasWidth,
+					height: Math.floor(k * canvasHeight)
+				}
+			} else {
+				var k = kw / kh;
+				return {
+					x: Math.floor(canvasWidth * (1 - k) / 2),
+					y: 0,
+					width: Math.floor(k * canvasWidth),
+					height: canvasHeight
+				}
+			}
+		}
+	}
+	
 	static getRotationMatrix(angle) {
 		if (angle === undefined || angle === 0)
 			return [
