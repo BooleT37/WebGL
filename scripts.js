@@ -225,6 +225,7 @@ class Program {
 				renderColorMatrix(matrices[i].matrix4x4, matrices[i].lastRow);
 				var singleImageEndTime = window.performance.now();
 				singleImageRenderingTimes[i] = singleImageEndTime - singleImageStartTime;
+				self.options = {};
 			}
 			var endTime = window.performance.now();
 			var timeElapsed = (endTime - startTime);
