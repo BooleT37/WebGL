@@ -30,14 +30,14 @@ class CanvasImageProcessor {
 					0,0,1,0,
 					0,0,0,1
 				],
-				lastRow: [0,0,0,0]
+				lastCol: [0,0,0,0]
 			};
 		
 		this.context.drawImage(this.img, this.imageCoords.x, this.imageCoords.y, this.imageCoords.width, this.imageCoords.height);
 		var imageData = this.context.getImageData(this.imageCoords.x, this.imageCoords.y, this.imageCoords.width, this.imageCoords.height);
 		var data = imageData.data;
 		
-		var M = options.colorMatrix.matrix4x4, R = options.colorMatrix.lastRow;
+		var M = options.colorMatrix.matrix4x4, R = options.colorMatrix.lastCol;
 		var r, g, b, a;
         for (var i = 0; i < data.length; i += 4) {
 			r = Math.pow(data[i] / 256, gamma) * 256;

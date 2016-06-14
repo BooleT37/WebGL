@@ -38,13 +38,13 @@ class SvgImageProcessor {
 					0,0,1,0,
 					0,0,0,1
 				],
-				lastRow: [0,0,0,0]
+				lastCol: [0,0,0,0]
 			};
 		var newColorMatrix = [];
 		for (var row = 0; row < 4; row++) {
 			for (var col = 0; col < 4; col++)
 				newColorMatrix.push(options.colorMatrix.matrix4x4[row * 4 + col]);
-			newColorMatrix.push(options.colorMatrix.lastRow[row])
+			newColorMatrix.push(options.colorMatrix.lastCol[row])
 		}
 		filter.querySelector('feColorMatrix').setAttribute('values', newColorMatrix.join(' '));
 		 

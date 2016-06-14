@@ -4,7 +4,7 @@ class TestsManager {
 		for (var i = 0; i < n; i++) {
 			var obj = {
 				matrix4x4: [],
-				lastRow: []
+				lastCol: []
 			};
 			for (var j = 0; j < 12; j++) {
 				obj.matrix4x4[j] = Math.random() / 5;
@@ -14,9 +14,9 @@ class TestsManager {
 			}
 			obj.matrix4x4[15] = Math.random() * (0.25) + 0.75;
 			for (var j = 0; j < 3; j++) {
-				obj.lastRow[j] = Math.random() / 5;
+				obj.lastCol[j] = Math.random() / 5;
 			}
-			obj.lastRow[3] = Math.random() / 50;
+			obj.lastCol[3] = Math.random() / 50;
 			res.push(obj);
 		}
 		return res;

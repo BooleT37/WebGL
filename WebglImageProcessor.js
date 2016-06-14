@@ -102,12 +102,12 @@ class WebglImageProcessor {
 					0,0,1,0,
 					0,0,0,1
 				],
-				lastRow: [0,0,0,0]
+				lastCol: [0,0,0,0]
 			};
 		
 			
 		gl.uniformMatrix4fv(this.u_locations.colorMatrix4x4, false, options.colorMatrix.matrix4x4);
-		gl.uniform4fv(this.u_locations.colorMatrixLastRow, options.colorMatrix.lastRow);
+		gl.uniform4fv(this.u_locations.colorMatrixLastRow, options.colorMatrix.lastCol);
 		
 		gl.uniformMatrix3fv(this.u_locations.matrix, false, M);
 		

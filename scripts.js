@@ -51,10 +51,10 @@ class Program {
 			self.resetControls();
 		}
 		
-		function renderColorMatrix(matrix4x4, lastRow) {
+		function renderColorMatrix(matrix4x4, lastCol) {
 			self.options.colorMatrix = {
 				matrix4x4: matrix4x4,
-				lastRow: lastRow
+				lastCol: lastCol
 			};
 			self.processor.render(self.options);
 		}
@@ -110,11 +110,11 @@ class Program {
 		self.contrastSlider.addEventListener('input', applyMatrixTransform);
 		self.saturationSlider.addEventListener('input', applyMatrixTransform);
 		
-		function renderColorMatrixPreset(e, matrix4x4, lastRow) {
+		function renderColorMatrixPreset(e, matrix4x4, lastCol) {
 			if (e.target.classList.contains("colorMatrixTile_disabled"))
 				return;
 			self.acivateColorMatrixTile(e.target);
-			renderColorMatrix(matrix4x4, lastRow);
+			renderColorMatrix(matrix4x4, lastCol);
 			self.resetControls(false);
 		};
 		
@@ -222,7 +222,7 @@ class Program {
 				self.options.rotationAngle = angles[i];
 				self.options.gamma = gammas[i];
 				var singleImageStartTime = window.performance.now();
-				renderColorMatrix(matrices[i].matrix4x4, matrices[i].lastRow);
+				renderColorMatrix(matrices[i].matrix4x4, matrices[i].lastCol);
 				var singleImageEndTime = window.performance.now();
 				singleImageRenderingTimes[i] = singleImageEndTime - singleImageStartTime;
 				self.options = {};
