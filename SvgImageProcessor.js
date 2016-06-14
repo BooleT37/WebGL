@@ -40,13 +40,13 @@ class SvgImageProcessor {
 				],
 				lastRow: [0,0,0,0]
 			};
-		var transposedColorMatrix = [];
+		var newColorMatrix = [];
 		for (var row = 0; row < 4; row++) {
 			for (var col = 0; col < 4; col++)
-				transposedColorMatrix.push(options.colorMatrix.matrix4x4[col * 4 + row]);
-			transposedColorMatrix.push(options.colorMatrix.lastRow[row])
+				newColorMatrix.push(options.colorMatrix.matrix4x4[row * 4 + col]);
+			newColorMatrix.push(options.colorMatrix.lastRow[row])
 		}
-		filter.querySelector('feColorMatrix').setAttribute('values', transposedColorMatrix.join(' '));
+		filter.querySelector('feColorMatrix').setAttribute('values', newColorMatrix.join(' '));
 		 
 	}
 }
