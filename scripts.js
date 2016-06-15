@@ -232,7 +232,10 @@ class Program {
 			var average = (singleImageRenderingTimes.reduce(function(a, b) {
 				return a + b;
 			})) / testsCount;
-			//console.log(singleImageRenderingTimes);
+			console.log(singleImageRenderingTimes.map(x => x.toFixed(4)));
+			console.log((singleImageRenderingTimes.slice(1).reduce(function(a, b) {
+				return a + b;
+			})) / testsCount);
 			testTimeDiv.textContent = timeElapsed.toFixed(2) + " мс (" + average.toFixed(3) + " мс на 1 шаг)";
 			
 		});
